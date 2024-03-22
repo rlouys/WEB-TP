@@ -1,0 +1,460 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+*,
+::after,
+::before {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: url('../src/bg4.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover; /* This will ensure that your background covers the entire body */
+}
+
+
+footer.fixed-bottom {
+    position: sticky; /* or absolute, depending on your layout */
+    bottom: 0;
+    width: 100%;
+    padding-left: 80%;
+}
+
+.footer-switch{
+    border: 0.2em solid darkgreen;
+    padding-left: 1.5vh;
+    background-color: rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    font-size: 1.25em;
+}
+
+
+.footer-darkmode{
+    color: white!important;
+}
+
+
+.main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+}
+
+h1{
+    font-weight: bold;
+    display: inline;
+    border-bottom: 3px solid darkgreen;
+}
+
+h3 {
+    font-size: 1.2375rem;
+    color: #FFF;
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+li {
+    list-style: none;
+}
+
+
+/* Pagination dans liste.html */
+
+.nav-clue .page-link {
+    color: darkgreen; /* Normal state color */
+}
+
+.nav-clue .page-link:hover {
+    color: green; /* Hover state color */
+    text-decoration: none; /* Removes underline on hover */
+    background-color: lightgrey; /* Background color on hover */
+}
+
+.nav-clue .page-item.active .page-link {
+    color: white;
+    background-color: darkgreen; /* Background color for active state */
+    border-color: darkgreen; /* Border color for active state */
+}
+
+.nav-clue .page-item.disabled .page-link {
+    color: grey; /* Color for disabled state */
+}
+
+/* Dark Mode / Light Mode */
+
+
+body.darkmode .nav-clue .page-link{
+    color: #abd5bd;
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+body.darkmode .nav-clue .page-link:hover {
+    color: #ffffff; /* White color on hover for dark mode */
+    background-color: #495057; /* Slightly lighter background on hover for dark mode */
+}
+
+body.darkmode .nav-clue .page-item.active .page-link {
+    background-color: #198754; /* Bootstrap green for active state */
+    border-color: #198754; /* Same border color for active state */
+}
+
+body.darkmode .nav-clue .page-item.disabled .page-link {
+    color: #6c757d; /* Bootstrap grey for disabled state */
+}
+
+.main-darkmode{
+    background-image: url("../src/bgd1.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color: white !important;
+}
+
+
+
+.main-darkmode p,
+.main-darkmode li,
+.main-darkmode h1,
+.main-darkmode h2,
+.main-darkmode h3,
+.main-darkmode h4,
+.main-darkmode h5,
+.main-darkmode h6 {
+    color: white !important;
+}
+
+
+body.darkmode .listePage{
+    background-color: #172A46!important;
+    color: #000000;
+}
+
+body.darkmode .table{
+    background-color: black;
+    color: white;
+}
+
+body.darkmode .table th,
+body.darkmode .table td {
+    border-color: #456789; /* Darker border for table cells */
+}
+
+body.darkmode .table thead th {
+    background-color: #234567; /* Even darker background for headers */
+    color: white;
+}
+
+/* Adjust button colors in dark mode as necessary */
+body.darkmode .btn-light {
+    background-color: #F8F8F8;
+    color: black;
+}
+
+body.darkmode .form-group{
+    color:white;
+}
+
+.wrapper-darkmode{
+    background-color: rgba(22,42,70,0.95)!important;
+}
+
+.sidebar-darkmode {
+    background-color: rgba(22, 42, 70, 0.95)!important; /* Slightly translucent background for a frosted glass effect */
+    backdrop-filter: blur(5px); /* Blur effect for the background elements seen through the sidebar, enhancing the glass effect */
+    border-right: 1px solid rgba(255, 255, 255, 0.1); /* A subtle border to define the edge */
+    transition: all 0.35s ease-in-out;
+    box-shadow: 0 0 10px 5px rgba(255,255,255, 0.2)!important; /* Adjusted box shadow for the halo effect */
+}
+
+
+.sidebar-darkmode a,
+.sidebar-darkmode p,
+.sidebar-darkmode li,
+.sidebar-darkmode h1,
+.sidebar-darkmode h2,
+.sidebar-darkmode h3,
+.sidebar-darkmode h4,
+.sidebar-darkmode h5,
+.sidebar-darkmode h6 {
+    color: white !important;
+}
+/* SIDE BAR */
+
+#sidebar {
+    max-width: 27vh;
+    min-width: 27vh;
+    transition: all 0.35s ease-in-out;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.45); /* Deeper outer shadow for more contrast */
+    z-index: 1111;
+    background-color: rgba(255, 245, 245, 0.95); /* Slightly translucent background for a frosted glass effect */
+    border-right: 1px solid rgba(0, 0, 0, 0.2); /* A subtle border to define the edge */
+    overflow: hidden; /* Ensures no spillover if using border radius or other effects */
+    border-top-right-radius: 15px; /* Rounds the top-left corner */
+    border-bottom-right-radius: 15px; /* Rounds the bottom-left corner */
+}
+
+input:focus + label {
+  color: rgba(25,135,84,1)!important;
+}
+
+#navbar{
+    background-color: rgba(25,135,84,0.6)!important;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    font-size: 1.25rem;
+}
+
+.nav-item{
+    margin: 0.8vh;
+}
+
+#sidebar.collapsed {
+    margin-left: -27vh;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(25, 135, 84, 0.5); /* Adjust the background color if needed */
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-image {
+  width: 3em;
+  height: 3em;
+  margin-right: 0.7em;
+}
+
+.logo-title {
+    font-size: 2rem; /* Larger font size for the title */
+    color: #333; /* Dark gray color for a modern look */
+    font-weight: 700; /* Increased font weight for title emphasis */
+    border-bottom: none;
+    margin-top: 0.1em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.navbar a{
+    color:white;
+}
+
+.sidebar-nav {
+    padding: 0;
+}
+
+.sidebar-header {
+    color: #000000;
+    font-size: .75rem;
+    padding: 1.5rem 1.5rem .375rem;
+    text-decoration: underline;
+}
+
+#sidebar-toggle:hover {
+  background-color: rgba(25,135,84,0.8); /* Green background */
+    border-radius: 30%;
+}
+
+
+/* CSS to highlight "Livres" when its dropdown is expanded */
+a#livres[aria-expanded="true"],
+a#annexe[aria-expanded="true"],
+a#auths[aria-expanded="true"] {
+  background-color: rgba(25, 135, 84, 0.6);
+}
+
+
+/* Normal hover effect for all sidebar items */
+.sidebar-item:hover > .sidebar-link {
+  background-color: rgba(25, 135, 84, 0.4);
+}
+
+/* CSS for the dropdown items, ensuring they do not stay highlighted */
+.sidebar-dropdown .sidebar-item .sidebar-link {
+  color: #000000; /* Or any other color you want for the dropdown links */
+}
+
+/* Remove the highlight from "Bibliothèque" and "Ajouter un livre" */
+a#bibliotheque:hover, a#ajouter:hover {
+  background-color: rgba(25, 135, 84, 0.2);
+}
+
+/* CSS for the dropdown items on hover, for a hover effect */
+.sidebar-dropdown .sidebar-item .sidebar-link:hover {
+  background-color: rgba(25, 135, 84, 0.2);
+  color: #000000;
+}
+
+
+
+a.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #000000;
+    position: relative;
+    display: block;
+    font-size: 1.1rem;
+    text-decoration: none;
+}
+
+.sidebar-link[data-bs-toggle="collapse"]::after {
+    border: solid;
+    border-width: 0 .075rem .075rem 0;
+    content: "";
+    display: inline-block;
+    padding: 2px;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.4rem;
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
+}
+
+.sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+    transform: rotate(45deg);
+    transition: all .2s ease-out;
+}
+
+.header-container {
+    display: flex!important; /* This will layout the child elements (h2) in a row */
+    justify-content: space-between!important; /* This will place the elements at the start and end of the container */
+    align-items: center!important; /* This will vertically align the elements in the middle */
+}
+
+.listePage{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5);
+    border-radius:20px;
+    padding:3em;
+    text-align:center;
+    background-color:#ffffff;
+    max-width: 50%;
+}
+
+
+/* Remove the focus ring */
+.form-check-input:focus {
+    box-shadow: none !important;
+    box-shadow: 0 0 0 0.12rem rgba(25, 135, 84, 0.5) !important; /* Example for a green halo */
+
+}
+
+.form-check-input:checked {
+    background-color: rgba(25, 135, 84, 0.5) !important;
+    border-color: rgba(25, 135, 84, 0.5) !important;
+}
+
+.form-check-input:checked + .form-check-label::before {
+    background-color: white !important;
+}
+
+
+/* BUTTONS */
+
+.button-group {
+    margin-top: 15px;
+}
+
+
+/* MAIN.html WRAPPER */
+.wrapper {
+    align-items: stretch;
+    display: flex;
+    width: 100%;
+}
+
+
+/* TABLES */
+
+table th,
+table td {
+    text-align: center;
+    vertical-align: middle;
+
+}
+
+
+/* INDEX.HTML */
+
+.content {
+    flex: 1;
+    max-width: 100vw;
+    width: 100vw;
+}
+
+/* LINKS */
+
+a.nav-link {
+    position: relative;
+}
+
+a.nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: black;
+    transition: width 0.3s ease; /* Animation duration and easing */
+}
+
+a.nav-link:hover::before {
+    width: 100%; /* Expand the border from left to right */
+}
+/* Responsive */
+
+.responsiveBox{
+    max-width: 60vh;
+    width: 100%;
+    margin: auto;
+}
+
+@media (min-width:768px) {
+    .content {
+        width: auto;
+    }
+    .listePage{
+        width: 90%;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+}
+
+

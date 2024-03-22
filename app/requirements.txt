@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+jinja2
+SQLAlchemy
+jose[cryptography]
+starlette
+pydantic
+passlib

@@ -1,0 +1,74 @@
+{% extends "main.html" %}
+{% block body %}
+
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center">
+
+        <!-- BOUTTON POUR PASSER AU LIVRE PRÉCÉDENT -->
+        <div class="col-auto d-flex align-items-center">
+            {% if livre.id > 0 %}
+            <a href="/modifier?id={{livre.id - 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            {% else %}
+            <a href="/modifier?id={{max_id}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            {% endif %}
+        </div>
+
+
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <div style="position: relative!important; padding: 20px!important; max-width:60vh; width: 100%; margin: auto;" class="listePage"  class="listePage">
+
+                <h1>Livre {{ livre.id + 1 }} :</h1>
+
+                <br><br><br>
+
+                <!-- FORM POUR MODIFIER LES INFOS D'UN LIVRE -->
+                <form id="modifier" action="/liste" method="POST">
+
+
+
+                    <input type="hidden" value="{{ livre['id'] }}" name="id"/>
+
+                    <!-- LIVRE NOM -->
+                    {{ macro.generateFormField("nom", livre.nom, '', true) }}
+                    <br>
+                    <!-- LIVRE AUTEUR -->
+                    {{ macro.generateFormField("auteur", livre.auteur, '', true) }}
+                    <br>
+
+                    <!-- LIVRE EDITEUR -->
+                    {{ macro.generateFormField("editeur", livre.editeur, '', true) }}
+                    <br>
+                    {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true) }}
+
+                </form>
+
+            </div>
+        </div>
+
+
+
+        <!-- BOUTTON POUR PASSER AU LIVRE SUIVANT -->
+        <div class="col-auto d-flex align-items-center">
+
+
+            {% if livre.id < max_id %}
+            <a href="/modifier?id={{livre.id + 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% else %}
+            <a href="/modifier?id=1" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

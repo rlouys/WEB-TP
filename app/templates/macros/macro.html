@@ -1,0 +1,24 @@
+<!-- MACRO POUR GÉNERER DES FORM FIELD -->
+
+{% macro generateFormField(id, value, placeholder, label) %}
+    <div class="form-floating">
+        <input placeholder="{{placeholder}}" type="text" style="background-color: white; " id="{{ id }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank." >
+        <label for="{{ id }}" class="form-label">{{ id|capitalize }}</label>
+    </div>
+
+{% endmacro %}
+
+<!-- MACRO POUR GÉNERER DES SUBMIT BUTTON -->
+{% macro generateFormSubmit(class, placeholder ,retour) %}
+    <div class="form-group">
+        <!-- Bouton retour ? -->
+        {% if retour %}
+        <a href="/liste" class="btn btn-outline-secondary">Retour</a>
+        {% endif %}
+
+        <button type="submit" class="{{ class }}"> {{ placeholder }} </button>
+    </div>
+{% endmacro %}
+
+
+

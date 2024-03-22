@@ -1,0 +1,50 @@
+
+{% extends "main.html" %}
+{% block body %}
+
+        <br>
+    <div class="test">
+        <h1>Ajouter une énigme</h1>
+    <br><br>
+        <div class="bloc_article">
+            <br>
+            <div class="article">
+            <form action='/ajouternew' method="POST">
+                {{ form.hidden_tag()  }}
+                <div class="form-group">
+                    {{ form.question.label(class="form-label") }}
+                    {{ form.question(class="form-control") }}
+                </div>
+                <br>
+                <div class="form-group">
+                    {{ form.solution.label(class="form-label") }}
+                    {{ form.solution(class="form-control") }}
+                </div>
+                <br>
+                <div class="form-group">
+                    {{ form.hint.label(class="form-label") }}
+                    {{ form.hint(class="form-control") }}
+                </div>
+                <br>
+                <div>
+                    {{ form.difficulty.label(class="form-label") }}
+                    {{ form.difficulty(class="form-control") }}
+                </div>
+                <br>
+                {{ form.submit(class="btn btn-outline-success") }}
+            </form>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+{% endblock %}

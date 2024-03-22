@@ -1,0 +1,35 @@
+{% extends "main.html" %}
+{% block body %}
+
+<br>
+
+<div style="max-width:60vh; width: 100%; margin: auto;" class="listePage">
+
+    <br><br>
+    <i class="fas fa-user-circle fa-lg" style="font-size:9vh; color:rgba(25, 135, 84, 0.5);"></i>
+    <br><br><br>
+
+
+    <!-- FORM TO SUBMIT CONNEXION INFOS -->
+    <form action="/connexion" method="POST">
+
+        <!-- USERNAME -->
+        {{ macro.generateFormField("username", '', "Email") }}
+
+        <br>
+        <!-- PASSWORD -->
+        {{ macro.generateFormField("password", '', "Mot de passe") }}
+
+        <br>
+        <!-- SUBMIT BUTTON -->
+        <br>
+        {{ macro.generateFormSubmit("btn btn-outline-success","Se connecter", false) }}
+        <br>
+        <p class="text-muted"><a id="forgotpass" href="/infos" style=" color: black;">Forgot your password?</a></p>
+
+
+
+    </form>
+</div>
+
+{% endblock %}
