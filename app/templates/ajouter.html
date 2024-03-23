@@ -6,33 +6,26 @@
 
 <div class="listePage responsiveBox">
 
-    <i style="font-size:9vh; color:rgba(25, 135, 84, 0.5);" class="fa-solid fa-book-journal-whills"></i>
+    <i class="fa-solid fa-book-journal-whills ajouter-icon"></i>
 
     <br><br><br>
 
     <div>
-
         <br>
-
         <div>
-
             <!-- FORM TO CREATE A BOOK -->
             <form id="mainForm">
 
                 <!-- NOM -->
                 {{ macro.generateFormField("nom", '', "Nom du livre", false) }}
-
                 <br>
-
                 <!-- AUTEUR -->
                 {{ macro.generateFormField("auteur", '', 'Auteur', false) }}
-
                 <br>
-
                 <!-- EDITEUR -->
                 {{ macro.generateFormField("editeur", '', 'Editeur', false) }}
-
                 <br><br>
+
                 <input type="hidden" name="boolContinue" id="continueInput">
                 <!-- BUTTONS -->
 
@@ -45,7 +38,6 @@
 
 
             </form>
-
         </div>
     </div>
 </div>
@@ -61,7 +53,6 @@ document.getElementById('submitSend').addEventListener('click', function() {
 
     // !continue
     document.getElementById('continueInput').value = 'false';
-    // Submit the form
     form.submit();
 });
 
@@ -74,7 +65,6 @@ document.getElementById('submitContinue').addEventListener('click', function() {
 
     // continue
     document.getElementById('continueInput').value = 'true';
-    // Submit the form
     form.submit();
 });
 </script>

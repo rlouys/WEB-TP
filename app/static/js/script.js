@@ -60,21 +60,19 @@ document.addEventListener("DOMContentLoaded", function() {
         loaderContainer.style.justifyContent = 'center';
         loaderContainer.style.alignItems = 'center';
 
-        // Create an <img> element to display the animated SVG
+        // loader
         var loaderSVG = document.createElement('img');
         loaderSVG.src = '/static/src/Infinity-1s-200px.svg'; // Replace with the actual path to your animated SVG
         loaderSVG.style.width = '200px'; // Adjust the width and height as needed
         loaderSVG.style.height = '200px';
 
-        // Append the loader SVG to the container
         loaderContainer.appendChild(loaderSVG);
 
-        // Append the container to the document body
         document.body.appendChild(loaderContainer);
 
         setTimeout(function() {
             document.body.removeChild(loaderContainer);
-        }, 400); // Adjust the time in milliseconds as needed (e.g., 3000 milliseconds = 3 seconds)
+        }, 400); // La durée du loader en ms (ici 400 ms = 0.4s)
     });
 
 /*******************************************************************
@@ -92,8 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const navBarToggleSwitch = document.getElementById('flexSwitchCheckChecked');
     const darkModeToggleSwitch = document.getElementById('flexSwitchCheckCheckedDark');
-    const wrapper = document.querySelector('.wrapper.header');
-    const forgotpwd = document.getElementById('forgotpass');
+    const wrapper = document.querySelector('.wrapper.header'); // permet de corriger l'arrière plan de la sidebar (à cause du radius)
+    const askpass = document.getElementById('askpass'); // permet de colorer en blanc le "Forgot your password?"
     // Utility functions to manage cookies
     function setCookie(name, value, days) {
         var expires = "";
@@ -147,7 +145,11 @@ document.addEventListener('DOMContentLoaded', function() {
             navbar.classList.remove('navbar-light', 'bg-light');
             sidebar2.style.backgroundColor = '#172A46';
             wrapper.classList.add('wrapper-darkmode');
-            forgotpwd.style.color = 'rgba(255,255,255, 1)';
+
+            if (askpass) {
+                askpass.style.color = 'rgba(255,255,255, 1)';
+            }
+
         } else {
             main.classList.remove('main-darkmode');
             navbar.classList.remove('navbar-darkmode');
