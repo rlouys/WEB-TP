@@ -1,7 +1,7 @@
 <!-- MACRO POUR GÉNERER DES FORM FIELD -->
 
 {% macro generateFormField(id, value, placeholder, label) %}
-    <div class="form-floating">
+    <div class="form-floating" >
         <input placeholder="{{placeholder}}" type="text" style="background-color: white; " id="{{ id }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank." >
         <label for="{{ id }}" class="form-label">{{ id|capitalize }}</label>
     </div>

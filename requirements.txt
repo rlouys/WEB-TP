@@ -2,7 +2,8 @@ fastapi
 uvicorn
 jinja2
 SQLAlchemy
-jose[cryptography]
+python-jose[cryptography]
 starlette
 pydantic
 passlib
+python-multipart
