@@ -1,7 +1,7 @@
 <strong>create venv :</strong><br>
 python3 -m venv venv
 
-activate venv : </strong><br>
+<strong>activate venv : </strong><br>
 
 win :<br> 
 .\venv\Scripts\activate
