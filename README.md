@@ -11,7 +11,7 @@ source venv/bin/activate<br>
 
 
 <strong>Install requirements:</strong><br>
-pip3 install -r requirements.txt
+pip3 install -r .\requirements.txt  
 
 <strong>Run the app :</strong><br>
 uvicorn app.main:app --reload
