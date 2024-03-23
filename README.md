@@ -1,17 +1,17 @@
-create venv :
+<strong>create venv :</strong><br>
 python3 -m venv venv
 
-activate venv : 
+activate venv : </strong><br>
 
-win : 
+win :<br> 
 .\venv\Scripts\activate
 
-linux:
-source venv/bin/activate
+linux:<br>
+source venv/bin/activate<br>
 
 
-Install requirements:
+<strong>Install requirements:</strong><br>
 pip3 install -r requirements.txt
 
-Run the app :
+<strong>Run the app :</strong><br>
 uvicorn app.main:app --reload
