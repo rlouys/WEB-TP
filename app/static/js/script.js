@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // loader
         var loaderSVG = document.createElement('img');
-        loaderSVG.src = '/static/src/Infinity-1s-200px.svg'; // Replace with the actual path to your animated SVG
-        loaderSVG.style.width = '200px'; // Adjust the width and height as needed
+        loaderSVG.src = '/static/src/Infinity-1s-200px.svg';
+        loaderSVG.style.width = '200px'; 
         loaderSVG.style.height = '200px';
 
         loaderContainer.appendChild(loaderSVG);

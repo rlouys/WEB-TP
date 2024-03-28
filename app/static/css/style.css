@@ -12,9 +12,9 @@
 
 /* HEADER */
 .header-container {
-    display: flex!important; /* This will layout the child elements (h2) in a row */
-    justify-content: space-between!important; /* This will place the elements at the start and end of the container */
-    align-items: center!important; /* This will vertically align the elements in the middle */
+    display: flex!important;
+    justify-content: space-between!important;
+    align-items: center!important;
 }
 
 /* MAIN */
@@ -35,7 +35,7 @@ body {
     background: url('../src/bg4.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: cover; /* This will ensure that your background covers the entire body */
+    background-size: cover;
 }
 
 /* HEADINGS */
@@ -79,7 +79,7 @@ li {
 /* FOOTER */
 
 footer.fixed-bottom {
-    position: fixed; /* or absolute, depending on your layout */
+    position: fixed;
     bottom: 0;
     width: 100%;
     padding-left: 80%;
@@ -151,11 +151,11 @@ footer.fixed-bottom {
     max-width: 21vh;
     min-width: 21vh;
     transition: all 0.35s ease-in-out;
-    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.45); /* Deeper outer shadow for more contrast */
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.45);
     z-index: 1111;
-    background-color: rgba(255, 245, 245, 0.95); /* Slightly translucent background for a frosted glass effect */
-    border-right: 1px solid rgba(0, 0, 0, 0.2); /* A subtle border to define the edge */
-    overflow: hidden; /* Ensures no spillover if using border radius or other effects */
+    background-color: rgba(255, 245, 245, 0.95);
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    overflow: hidden;
     border-top-right-radius: 15px; /* Rounds the top-left corner */
     border-bottom-right-radius: 15px; /* Rounds the bottom-left corner */
 }
@@ -168,7 +168,7 @@ footer.fixed-bottom {
   display: flex;
   align-items: center;
   padding: 1rem;
-  background: rgba(25, 135, 84, 0.5); /* Adjust the background color if needed */
+  background: rgba(25, 135, 84, 0.5);
 }
 
 .logo-link {
@@ -184,9 +184,9 @@ footer.fixed-bottom {
 }
 
 .logo-title {
-    font-size: 1.2rem; /* Larger font size for the title */
-    color: #333; /* Dark gray color for a modern look */
-    font-weight: 700; /* Increased font weight for title emphasis */
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 700;
     border-bottom: none;
     margin-top: 0.4em;
 }
@@ -223,7 +223,7 @@ a#auths[aria-expanded="true"] {
 
 /* CSS for the dropdown items, ensuring they do not stay highlighted */
 .sidebar-dropdown .sidebar-item .sidebar-link {
-  color: #000000; /* Or any other color you want for the dropdown links */
+  color: #000000;
 }
 
 /* Remove the highlight from "Bibliothèque" and "Ajouter un livre" */
