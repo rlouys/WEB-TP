@@ -6,15 +6,16 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles # import staticfiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Router
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from jose import jwt # user authentication
 from datetime import datetime, timedelta
 import random
 from typing import Optional
-
+from .database import create_database
 # FILES
 from .model import *
-#from .dependencies import get_db
+from .dependencies import get_db
 
 # Variables pour l'authentification
 SECRET_KEY="me5GjOLMAQDzFBijhZ9NosTNlkS0J5SH"
@@ -25,24 +26,10 @@ app = FastAPI()
 router = APIRouter()
 url_router = Router()
 
+
 # Ajout des fichiers et liens nécessaires
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
-
-# DB DES LIVRES
-livres = [
-    {'id': 0, 'nom': 'Le Petit Prince', 'auteur': "Antoine de Saint-Exupéry", 'editeur': 'Gallimard'},
-    {'id': 1, 'nom': 'Harry Potter à l\'école des sorciers', 'auteur': "J.K. Rowling", 'editeur': "Gallimard Jeunesse"},
-    {'id': 2, 'nom': '1984', 'auteur': "George Orwell", 'editeur': "Secker & Warburg"},
-    {'id': 3, 'nom': 'Le Seigneur des anneaux', 'auteur': "J.R.R. Tolkien", 'editeur': "Allen & Unwin"},
-    {'id': 4, 'nom': 'Le Grand Meaulnes', 'auteur': "Alain-Fournier", 'editeur': "Éditions Émile-Paul Frères"},
-    {'id': 5, 'nom': 'Orgueil et Préjugés', 'auteur': "Jane Austen", 'editeur': "T. Egerton, Whitehall"},
-    {'id': 6, 'nom': 'L\'Alchimiste', 'auteur': "Paulo Coelho", 'editeur': "HarperCollins"},
-    {'id': 7, 'nom': 'Les Misérables', 'auteur': "Victor Hugo", 'editeur': "A. Lacroix, Verboeckhoven & Cie"},
-    {'id': 8, 'nom': 'Crime et Châtiment', 'auteur': "Fiodor Dostoïevski", 'editeur': "The Russian Messenger"},
-    {'id': 9, 'nom': 'Le Nom de la rose', 'auteur': "Umberto Eco", 'editeur': "Bompiani"}
-]
 
 
 ##############
@@ -50,7 +37,7 @@ livres = [
 ##############
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def read_root(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("index.html", {"request": request})
 
 ##############
@@ -59,71 +46,75 @@ async def read_root(request: Request):
 
 
 # PAGE BIBLIOTHEQUE - GET
-@app.get("/liste", response_class=HTMLResponse, name="liste")
-async def liste(request: Request,page: int = 1):
+@app.get("/liste", response_class=HTMLResponse)
+async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
+    per_page = 5
+    offset = (page - 1) * per_page
 
-    # BACK END POUR LA PAGINATION
-    per_page = 5 # nombre de livres par page
-    start = (page - 1) * per_page # premier livre à afficher
-    end = min(start + per_page, len(livres)) # dernier livre à afficher
-    total_pages = (len(livres) + per_page - 1) // per_page # on déduit le nombre de page totales (pour afficher les bons boutons)
-    livres_page = livres[start:end] # ensemble de livre qui va être print
+    # Query to get total number of books
+    total_books = db.query(func.count(Livre.id)).scalar()
+    total_pages = (total_books + per_page - 1) // per_page
 
-    url_context = {"request": request, "livres": livres_page, "page": page, "total_pages": total_pages, "length": len(livres)}
+    # Query to get books for the current page
+    livres_page = db.query(Livre).offset(offset).limit(per_page).all()
+
+    url_context = {
+        "request": request,
+        "livres": livres_page,
+        "page": page,
+        "total_pages": total_pages,
+        "length": total_books
+    }
     return templates.TemplateResponse("liste.html", url_context)
 
 
 # PAGE MODIFIER LIVRE - POST
 @app.post("/liste", response_class=HTMLResponse)
-async def modifier_livre(request: Request, id: int = Form(...), nom: str = Form(...), auteur: str = Form(...), editeur: str = Form(...)):
+async def modifier_livre(request: Request, db: Session = Depends(get_db), id: int = Form(...), nom: str = Form(...), auteur: str = Form(...), editeur: str = Form(...)):
+    # Fetch the book from the database
+    livre = db.query(Livre).filter(Livre.id == id).first()
+    if not livre:
+        raise HTTPException(status_code=404, detail="Livre not found")
 
-    # RECUPERATION DES INFOS MODIFIÉES DU LIVRE
-    try:
-        livre_data = Livre(id=id, nom=nom, auteur=auteur, editeur=editeur)
-    except ValueError as ve:
-        print(f"Error: {ve}")
-        raise HTTPException(status_code=400, detail=str(ve))
+    # Update the book details
+    livre.nom = nom
+    livre.auteur = auteur
+    livre.editeur = editeur
+    db.commit()
 
-    # MODIFICATION DU LIVRE DANS LA DB
-    for livre in livres:
-        if livre['id'] == int(id):
-            livre['nom'] = nom
-            livre['auteur'] = auteur
-            livre['editeur'] = editeur
-
-    # ON RENVOIE LA BONNE PAGE
-    page = 1 # numéro de la page sur laquelle revenir
-    per_page = 5 # nombre de livres par page
-    start = (page - 1) * per_page # premier livre à afficher
-    end = min(start + per_page, len(livres))  # dernier livre à afficher
-    total_pages = (len(livres) + per_page - 1) // per_page # on déduit le nombre de page totales (pour afficher les bons boutons)
-    livres_page = livres[start:end]  # ensemble de livre qui va être print
-
-    url_context = {"request": request, "livres": livres_page, "page": page, "total_pages": total_pages, "length": len(livres)}
-    return templates.TemplateResponse("liste.html", url_context)
+    # Redirect back to the book list
+    response = RedirectResponse(url="/liste", status_code=303)
+    return response
 
 
 ############################################################################################################################################
 
 # Page permettant de modifier une énigme (à modifier par un pop-up)
 @app.get("/modifier", response_class=HTMLResponse, name="modifier")
-async def modifier(request: Request, id: int):
+async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
+    # Query for the specific book by ID
+    livre = db.query(Livre).filter(Livre.id == id).first()
 
-    # On récupère le bon ID de livre, puis on l'envoie au HTML pour qu'ils puissent être mis dans les placeholder.
-    for livre in livres:
-        if livre['id'] == int(id):
-            return templates.TemplateResponse("modifier.html", {"request": request, "livre": livre, "max_id": len(livres)-1})
+    # If the book is found, render the modification page with the book's details
+    if livre:
+        max_id = db.query(func.max(Livre.id)).scalar() or 0
+        return templates.TemplateResponse("modifier.html", {"request": request,
+                                                            "livre": livre,
+                                                            "max_id": max_id })
 
+    # If the book is not found, render a 404 page
     return templates.TemplateResponse("404.html", {"request": request})
 
 ############################################################################################################################################
 
 # Page permettant de supprimer un livre.
 @app.post("/supprimer", response_class=HTMLResponse, name="supprimer")
-async def supprimer_livre(response: Response,id : int = Form(...)):
-    global livres
-
-    livres = [book for book in livres if book['id'] != id]
+async def supprimer_livre(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
+    # Query for the specific book by ID and delete it
+    livre_to_delete = db.query(Livre).filter(Livre.id == id).first()
+    if livre_to_delete:
+        db.delete(livre_to_delete)
+        db.commit()
 
     return RedirectResponse(url="/liste", status_code=303)
 
@@ -135,21 +126,24 @@ async def ajouter_livre(request: Request):
 
     return templates.TemplateResponse("ajouter.html",{"request": request})
 
-@app.post("/ajouter", response_class=HTMLResponse, name="ajouter_post")
-async def ajouter_livre(request: Request, nom: str = Form(...), auteur: str = Form(...), editeur: str = Form(...), boolContinue: Optional[str] = Form(None)):
-    global livres
 
-    # L'ID du livre créé est max(existing_id) + 1, s'il n'existe pas de livres, l'id = 0
-    new_id = max([livre['id'] for livre in livres]) + 1 if livres else 0
-    new_livre = {"id": new_id, "nom":nom, "auteur": auteur, "editeur":editeur}
-    livres.append(new_livre)
+@app.post("/ajouter", response_class=HTMLResponse, name="ajouter_post")
+async def ajouter_livre(request: Request, db: Session = Depends(get_db), nom: str = Form(...), auteur: str = Form(...),
+                        editeur: str = Form(...), boolContinue: Optional[str] = Form(None)):
+    # Create new Livre instance
+    new_livre = Livre(nom=nom, auteur=auteur, editeur=editeur, created_by = 1, modified_by = 1)
+
+    # Add to the database
+    db.add(new_livre)
+    db.commit()
+    db.refresh(new_livre)  # Refresh to get the ID if needed elsewhere
 
     print("boolContinue : " + str(boolContinue))
-    print(type(boolContinue))
     if boolContinue == "true":
         return RedirectResponse(url="/ajouter", status_code=303)
     else:
         return RedirectResponse(url="/liste", status_code=303)
+
 
 ##############
 # USERS

@@ -6,7 +6,7 @@
 
         <!-- BOUTTON POUR PASSER AU LIVRE PRÉCÉDENT -->
         <div class="col-auto d-flex align-items-center">
-            {% if livre.id > 0 %}
+            {% if livre.id > 1 %}
             <a href="/modifier?id={{livre.id - 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
@@ -23,7 +23,7 @@
         <div class="col-md-8">
             <div style="position: relative!important; padding: 20px!important; max-width:60vh; width: 100%; margin: auto;" class="listePage"  class="listePage">
 
-                <h1>Livre {{ livre.id + 1 }} :</h1>
+                <h1>Livre {{ livre.id }} :</h1>
 
                 <br><br><br>
 

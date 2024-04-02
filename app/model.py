@@ -1,26 +1,32 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
+from .database import Base
 from datetime import datetime
-from passlib.hash import bcrypt
-from pydantic import BaseModel, EmailStr, constr, validator, Field
-from typing import Optional
-#from .database import Base
-from enum import Enum
 
 # Classe permettant de représenter un livre et de générer un formulaire avec cette classe.
 # Utilisée dans dans la fonction modifier_livre de la route /liste dans main.py
 
-class Livre(BaseModel):
-    id: int
-    nom: str = Field(..., min_length=1)
-    auteur: str = Field(..., min_length=1)
-    editeur: str = Field(..., min_length=1, error_messages={"missing":"Hey"})
+class Livre(Base):
+    __tablename__ = 'livres'
 
-    @validator('nom', 'auteur','editeur')
-    def non_vide(cls, v):
-        print("ok")
-        if not v or v.isspace() or v == "":
-            print("nok")
-            raise ValueError("Le champ doit être rempli")
-        return v
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    nom: Mapped[str] = Column(String(128), nullable=False)
+    auteur: Mapped[str] = Column(String(128), nullable=False)
+    editeur: Mapped[str] = Column(String(72), nullable=False)
+    createdOn: Mapped[datetime] = Column(DateTime, nullable=False, server_default=func.now())
+    created_by: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    modified_on: Mapped[datetime] = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    modified_by: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    creator = relationship("User", foreign_keys=[created_by], backref="created_livres")
+    modifier = relationship("User", foreign_keys=[modified_by], backref="modified_livres")
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = Column(String(20), unique=True, nullable=False)
+    email: Mapped[str] = Column(String(120), unique=True, nullable=False)
+    password_hash: Mapped[str] = Column(String(128))
+    privileges: Mapped[str] = Column(String(120))
+    date_added: Mapped[datetime] = Column(DateTime, server_default=func.now())

@@ -1,11 +1,11 @@
-#from .database import SessionLocal
+from .database import SessionLocal
 
 #############################
 # PERMET DE RECUPÉRER LA DB #
 #############################
-#def get_db():
-#    db = SessionLocal()
-#    try:
-#        yield db
-#    finally:
-#        db.close()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
