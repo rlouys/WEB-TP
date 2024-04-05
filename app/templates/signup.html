@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+{% block body %}
+
+<br>
+
+<div style="max-width:60vh; width: 100%; margin: auto;" class="listePage">
+
+    <br><br>
+    <i class="fas fa-user-circle fa-lg" style="font-size:9vh; color:rgba(25, 135, 84, 0.5);"></i>
+    <br><br><br>
+
+    <!-- FORM TO SUBMIT INSCRIPTION INFOS -->
+    <form action="/inscription" method="POST" class="mb-3">
+        <!-- USERNAME -->
+        {{ macro.generateFormField("new_username", '', "Nom d'utilisateur") }}
+        <br>
+        <!-- EMAIL -->
+        {{ macro.generateFormField("new_email", '', "Adresse email") }}
+        <br>
+        <!-- PASSWORD -->
+        {{ macro.generateTypedFormField("new_password", '', "Mot de passe", "password") }}
+        <br>
+        <!-- CONFIRM PASSWORD -->
+        {{ macro.generateTypedFormField("confirm_password", '', "Confirmer le mot de passe", "password") }}
+        <br>
+        <!-- SUBMIT BUTTON -->
+        {{ macro.generateFormSubmit("btn btn-outline-success", "S'inscrire", false) }}
+    </form>
+
+</div>
+
+{% endblock %}

@@ -10,26 +10,25 @@
     <br><br><br>
 
 
-    <!-- FORM TO SUBMIT CONNEXION INFOS -->
-    <form action="/connexion" method="POST">
-
+     <!-- FORM TO SUBMIT CONNEXION INFOS -->
+    <form action="/connexion" method="POST" class="mb-3">
         <!-- USERNAME -->
         {{ macro.generateFormField("username", '', "Email") }}
-
         <br>
         <!-- PASSWORD -->
         {{ macro.generateFormField("password", '', "Mot de passe") }}
-
         <br>
-        <!-- SUBMIT BUTTON -->
-        <br>
-        {{ macro.generateFormSubmit("btn btn-outline-success","Se connecter", false) }}
-        <br>
-        <p class="text-muted"><a id="askpass" href="/infos" style=" color: black;">Forgot your password?</a></p>
-
-
-
+        <!-- BUTTONS CONTAINER -->
+        <div class="d-flex justify-content-between">
+            <!-- SUBMIT BUTTON -->
+            {{ macro.generateFormSubmit("btn btn-outline-success", "Se connecter", false) }}
+            <!-- S'INSCRIRE LINK BUTTON -->
+            <a href="/inscription" class="btn btn-outline-primary align-self-end">S'inscrire</a>
+        </div>
     </form>
+
+    <p class="text-muted"><a id="askpass" href="/infos" style="color: black;">Forgot your password?</a></p>
+
 </div>
 
 {% endblock %}

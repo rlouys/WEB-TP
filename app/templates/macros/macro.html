@@ -3,7 +3,7 @@
 {% macro generateFormField(id, value, placeholder, label) %}
     <div class="form-floating" >
         <input placeholder="{{placeholder}}" type="text" style="background-color: white; " id="{{ id }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank." >
-        <label for="{{ id }}" class="form-label">{{ id|capitalize }}</label>
+        <label for="{{ id }}" class="form-label">{{ placeholder|capitalize }}</label>
     </div>
 
 {% endmacro %}
@@ -19,6 +19,16 @@
         <button type="submit" class="{{ class }}"> {{ placeholder }} </button>
     </div>
 {% endmacro %}
+<!-- MACRO POUR GÉNERER LES CHAMPS PASSWORD (il faudrait mettre les caracteres *** je verrais demain ou un autre jour -->
+{% macro generateTypedFormField(id, value, placeholder, label, type="text") %}
+    <div class="form-floating">
+        <input placeholder="{{ placeholder }}" type="{{ type }}" style="background-color: white;" id="{{ id_pwd }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank.">
+        <label for="{{ id }}" class="form-label">{{ placeholder|capitalize }}</label>
+    </div>
+{% endmacro %}
+
+
+
 
 
 

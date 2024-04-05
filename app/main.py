@@ -1,21 +1,20 @@
 # LIBRARIES
-from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status, Cookie
+from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm # User authentication
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles # import staticfiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Router
-from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-from jose import jwt # user authentication
-from datetime import datetime, timedelta
-import random
 from typing import Optional
-from .database import create_database
+
+from .login_manager import login_manager
 # FILES
 from .model import *
 from .dependencies import get_db
+from .routes.users import pwd_context
+from .schemas import UserSchema
 
 # Variables pour l'authentification
 SECRET_KEY="me5GjOLMAQDzFBijhZ9NosTNlkS0J5SH"
@@ -71,7 +70,7 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 # PAGE MODIFIER LIVRE - POST
 @app.post("/liste", response_class=HTMLResponse)
 async def modifier_livre(request: Request, db: Session = Depends(get_db), id: int = Form(...), nom: str = Form(...), auteur: str = Form(...), editeur: str = Form(...)):
-    # Fetch the book from the database
+    # Fetch the book from the data
     livre = db.query(Livre).filter(Livre.id == id).first()
     if not livre:
         raise HTTPException(status_code=404, detail="Livre not found")
@@ -133,7 +132,7 @@ async def ajouter_livre(request: Request, db: Session = Depends(get_db), nom: st
     # Create new Livre instance
     new_livre = Livre(nom=nom, auteur=auteur, editeur=editeur, created_by = 1, modified_by = 1)
 
-    # Add to the database
+    # Add to the data
     db.add(new_livre)
     db.commit()
     db.refresh(new_livre)  # Refresh to get the ID if needed elsewhere
@@ -154,9 +153,60 @@ async def ajouter_livre(request: Request, db: Session = Depends(get_db), nom: st
 async def connexion(request: Request):
     return templates.TemplateResponse("connexion.html", {"request": request})
 
+
 @app.post("/connexion")
-async def handle_connexion(response: Response):
+async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestForm = Depends(),
+                           db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == form_data.username).first()
+    if not user or not pwd_context.verify(form_data.password, user.password_hash):
+        return templates.TemplateResponse("connexion.html", {
+            "request": response.request,
+            "error": "Invalid username or password"
+        }, status_code=status.HTTP_401_UNAUTHORIZED)
+
+    access_token = login_manager.create_access_token(data={'sub': user.username})
+    login_manager.set_cookie(response, access_token)
     return RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/inscription", response_class=HTMLResponse)
+async def inscription(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
+
+@app.post("/inscription")
+async def create_user(request: Request, db: Session = Depends(get_db),
+                      new_username: str = Form(...), new_email: EmailStr = Form(...),
+                      new_password: str = Form(...), confirm_password: str = Form(...)):
+    # vérif si les mdp sont identiquues
+    if new_password != confirm_password:
+        return templates.TemplateResponse("signup.html", {
+            "request": request,
+            "error_message": "Les mots de passe ne correspondent pas."
+        })
+    #verif si présent
+    user = db.query(User).filter((User.email == new_email) | (User.username == new_username)).first()
+    if user:
+        return templates.TemplateResponse("signup.html", {
+            "request": request,
+            "error_message": "Email ou nom d'utilisateur déjà utilisé."
+        })
+
+    #hashage
+    hashed_password = pwd_context.hash(new_password)
+    new_user = User(
+        username=new_username,
+        email=new_email,
+        password_hash=hashed_password,
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return templates.TemplateResponse("signup_succes.html", {"request": request})
+
+@app.get("/protected")
+async def read_protected(user: UserSchema = Depends(login_manager)):
+    return {"message": "Hello, Protected World!"}
 
 ############################################################################################################################################
 

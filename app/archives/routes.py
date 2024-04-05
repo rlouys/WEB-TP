@@ -198,7 +198,7 @@ def ajouter():
             return redirect(url_for("liste"))
         except Exception as e:
             db.session.rollback()
-            flash("Error adding clue to the database !", 'error')
+            flash("Error adding clue to the data !", 'error')
 
     return render_template("ajouter.html")
 
@@ -233,7 +233,7 @@ def ajouternew():
             return redirect(url_for("liste"))
         except Exception as e:
             db.session.rollback()
-            flash("Error adding clue to the database !", 'error')
+            flash("Error adding clue to the data !", 'error')
 
         #form.question.data = ''
         #form.solution.data = ''
@@ -348,7 +348,7 @@ def add_users():
             return redirect(url_for("userlist"))
         except Exception as e:
             db.session.rollback()
-            flash("Error adding user to the database !", 'error')
+            flash("Error adding user to the data !", 'error')
 
     else:
         for fieldName, errorMessages in form.errors.items():
@@ -405,7 +405,7 @@ def modifier_user():
                 return redirect(url_for("userlist"))
             except Exception as e:
                 db.session.rollback()
-                flash("Error modifying user to the database !", 'error')
+                flash("Error modifying user to the data !", 'error')
 
         else:
             flash("Password is not correct!", 'warning')

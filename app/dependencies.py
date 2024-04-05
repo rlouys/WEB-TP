@@ -1,4 +1,4 @@
-from .database import SessionLocal
+from app.data.database import SessionLocal
 
 #############################
 # PERMET DE RECUPÉRER LA DB #

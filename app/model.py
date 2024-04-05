@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from pydantic import EmailStr
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
-from .database import Base
+from app.data.database import Base
 from datetime import datetime
 
 # Classe permettant de représenter un livre et de générer un formulaire avec cette classe.
