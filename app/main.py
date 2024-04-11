@@ -155,18 +155,17 @@ async def connexion(request: Request):
 
 
 @app.post("/connexion")
-async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestForm = Depends(),
-                           db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
-    if not user or not pwd_context.verify(form_data.password, user.password_hash):
+async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
+    if user and pwd_context.verify(form_data.password, user.password_hash):
+        access_token = login_manager.create_access_token(data={'sub': user.username})
+        login_manager.set_cookie(response, access_token)
+        return RedirectResponse(url=f"/profil?user_id={user.id}", status_code=status.HTTP_303_SEE_OTHER)
+    else:
         return templates.TemplateResponse("connexion.html", {
             "request": response,
             "error": "Invalid username or password"
         }, status_code=status.HTTP_401_UNAUTHORIZED)
-
-    access_token = login_manager.create_access_token(data={'sub': user.username})
-    login_manager.set_cookie(response, access_token)
-    return RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/inscription", response_class=HTMLResponse)
 async def inscription(request: Request):
@@ -213,8 +212,39 @@ async def read_protected(user: UserSchema = Depends(login_manager)):
 
 # Page de profil de l'utilisateur
 @app.get("/profil", response_class=HTMLResponse, name="profil")
-async def profil(request: Request):
-    return templates.TemplateResponse("profil.html", {"request": request})
+async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
+    user_data = db.query(User).filter(User.id == user_id).first()
+    if not user_data:
+        return templates.TemplateResponse("404.html", {"request": request})
+
+    return templates.TemplateResponse("profil.html", {
+        "request": request,
+        "user": user_data
+    })
+
+@app.post("/change-password", response_class=HTMLResponse)
+async def change_password(request: Request, db: Session = Depends(get_db), user: UserSchema = Depends(login_manager),
+                          currentPassword: str = Form(...), newPassword: str = Form(...), confirmPassword: str = Form(...)):
+    user_data = db.query(User).filter(User.username == user.username).first()
+    if not user_data or not pwd_context.verify(currentPassword, user_data.password_hash):
+        return templates.TemplateResponse("profil.html", {
+            "request": request,
+            "error": "Le mot de passe actuel est incorrect."
+        })
+
+    if newPassword != confirmPassword:
+        return templates.TemplateResponse("profil.html", {
+            "request": request,
+            "error": "Les nouveaux mots de passe ne correspondent pas."
+        })
+
+    user_data.password_hash = pwd_context.hash(newPassword)
+    db.commit()
+
+    return templates.TemplateResponse("profil.html", {
+        "request": request,
+        "message": "Mot de passe mis à jour avec succès."
+    })
 
 
 ##############

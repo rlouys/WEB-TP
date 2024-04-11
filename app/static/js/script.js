@@ -192,7 +192,22 @@ document.addEventListener('click', function (event) {
     }
 });
 
-
+// Assurez-vous que ce code n'est pas dans un bloc DOMContentLoaded ou similaire
+function togglePasswordChange() {
+    var container = document.getElementById('passwordChangeFields');
+    if (container.style.maxHeight && container.style.maxHeight !== "0px") {
+        container.style.maxHeight = "0px";
+    } else {
+        container.style.maxHeight = container.scrollHeight + "px";
+    }
+}
+// Dans script.js
+document.addEventListener('DOMContentLoaded', function () {
+    var button = document.getElementById('changePasswordButton');
+    if (button) {
+        button.addEventListener('click', togglePasswordChange);
+    }
+});
 
 
 

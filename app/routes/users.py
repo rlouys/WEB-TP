@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.login_manager import login_manager
 from app.model import User
-from app.services.users import get_user_by_username
+from app.services.users import get_user_by_username, get_user_by_email
 from app.schemas import UserSchema
 
 router = APIRouter(prefix="/users")
@@ -19,10 +19,16 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def login_route(
         username: Annotated[str, Body()],
         password: Annotated[str, Body()],
+        email: Annotated[str, Body()],
 ):
-    user = get_user_by_username(username)
-    if user is None or user.password != password:
-        return HTTPException(
+    # Vérifier si l'entrée est un email
+    if "@" in username:
+        user = get_user_by_email(email)
+    else:
+        user = get_user_by_username(username)
+
+    if user is None or not user.password == password:
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Bad credentials."
         )
@@ -62,3 +68,4 @@ def signup(username: str, email: str, password: str, db: Session = Depends(get_d
     db.add(new_user)
     db.commit()
     return {"message": "User created successfully"}
+
