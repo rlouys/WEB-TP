@@ -7,3 +7,6 @@ starlette
 pydantic
 passlib
 python-multipart
+fastapi_login
+pydantic[email]
+bcrypt

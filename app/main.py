@@ -160,7 +160,7 @@ async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestF
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not pwd_context.verify(form_data.password, user.password_hash):
         return templates.TemplateResponse("connexion.html", {
-            "request": response.request,
+            "request": response,
             "error": "Invalid username or password"
         }, status_code=status.HTTP_401_UNAUTHORIZED)
 
