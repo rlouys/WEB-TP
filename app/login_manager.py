@@ -11,37 +11,27 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedelta(minutes=15)):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def verify_token(token: str):
-    credentials_exception = HTTPException(
+    exception_de_credentials = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Impossible de valider les identifiants",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        return username
+        if payload.get("sub") is None:
+            raise exception_de_credentials
+        return payload  # Retour du payload complet pour plus de flexibilité
     except JWTError:
-        raise credentials_exception
+        raise exception_de_credentials
 
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    try:
-        username = verify_token(token)
-        return username
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail="Invalid token") from e
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+    payload = verify_token(token)
+    return payload  # Nous pouvons maintenant utiliser n'importe quelle partie du payload dans nos fonctions de point de terminaison

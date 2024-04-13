@@ -37,12 +37,16 @@ async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestF
     if user and user.verify_password(form_data.password):
         access_token = create_access_token(data={'sub': user.username})
         set_cookie(response, access_token)
-        return RedirectResponse(url=f"/profil?user_id={user.id}", status_code=status.HTTP_303_SEE_OTHER)
+        response = RedirectResponse(url=f"/profil?user_id={user.id}", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, path="/")
+        return response
     else:
         return templates.TemplateResponse("connexion.html", {
-            "request": response,
+            "request": response.request,  # Ensure to pass request not response
             "error": "Invalid username or password"
         }, status_code=status.HTTP_401_UNAUTHORIZED)
+
+
 
 
 @router.get("/inscription", response_class=HTMLResponse)
@@ -74,10 +78,10 @@ async def read_protected(user: UserSchema = Depends(get_current_user)):
 ############################################################################################################################################
 
 
-# Page de profil de l'utilisateur
 @router.get("/profil", response_class=HTMLResponse, name="profil")
-async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
-    user_data = db.query(User).filter(User.id == user_id).first()
+async def profil(request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    # Utilisation de l'utilisateur authentifié pour accéder à ses données
+    user_data = db.query(User).filter(User.id == user.id).first()
     if not user_data:
         return templates.TemplateResponse("404.html", {"request": request})
 
@@ -85,7 +89,6 @@ async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
         "request": request,
         "user": user_data
     })
-
 @router.post("/change-password", response_class=HTMLResponse)
 async def change_password(request: Request, db: Session = Depends(get_db), user_id: int = Depends(get_current_user),
                           currentPassword: str = Form(...), newPassword: str = Form(...), confirmPassword: str = Form(...)):
