@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app import login_manager
 from app.login_manager import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user, oauth2_scheme, \
-    verify_token
+    verify_token, get_user_id_from_token
 from app.model import *
 from app.data.dependencies import get_db
 
@@ -28,16 +28,13 @@ async def connexion(request: Request):
     return templates.TemplateResponse("connexion.html", {"request": request})
 
 
-def set_cookie(response: Response, access_token: str):
-    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, path="/")
-
 @router.post("/connexion")
 async def handle_connexion(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
     if user and user.verify_password(form_data.password):
-        access_token = create_access_token(data={'sub': user.username})
-        set_cookie(response, access_token)
+        access_token = create_access_token(data={'sub': user.username, 'id': user.id})
         response = RedirectResponse(url=f"/profil?user_id={user.id}", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, path="/")
         return response
     else:
         return templates.TemplateResponse("connexion.html", {
@@ -78,7 +75,18 @@ async def read_protected(user: UserSchema = Depends(get_current_user)):
 # Page de profil de l'utilisateur
 @router.get("/profil", response_class=HTMLResponse, name="profil")
 async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
+
+
+    token = request.cookies.get('access_token')
+    token = token[7:]
+    # Get current user from token id
+    user_id_from_cookies = get_user_id_from_token(token)
+
     user_data = db.query(User).filter(User.id == user_id).first()
+
+    if user_id != user_id_from_cookies:
+        raise HTTPException(status_code=403, detail="Not authorized to access this profile")
+
     if not user_data:
         return templates.TemplateResponse("404.html", {"request": request})
 
@@ -162,7 +170,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             status_code=400,
             detail="Incorrect username or password"
         )
-    access_token = create_access_token(data={"sub": user.username})
+    access_token = create_access_token(data={"sub": user.username, 'id': user.id})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/users/me/")

@@ -8,7 +8,7 @@ DATABASE_URL = "sqlite:///./database.db"
 engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False},  # Only necessary for SQLite
-    echo=True  # If you want to see the generated SQL statements
+    echo=False  # If you want to see the generated SQL statements
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
