@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
+
+from app.login_manager import verify_token
 from app.model import *
 from app.data.dependencies import get_db
 
@@ -23,7 +25,16 @@ templates = Jinja2Templates(directory="app/templates")
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
     per_page = 10
     offset = (page - 1) * per_page
+    '''
+    token = request.cookies.get('access_token')
+    if not token:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    else:
+        token = token[7:]
 
+    if not verify_token(token):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        '''
     # Query to get total number of books
     total_books = db.query(func.count(Livre.id)).scalar()
     total_pages = (total_books + per_page - 1) // per_page

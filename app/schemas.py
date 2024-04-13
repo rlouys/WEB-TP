@@ -13,3 +13,5 @@ class UserSignUp(BaseModel):
     new_email: EmailStr
     new_password: str
     confirm_password: str
+    privileges: str
+    is_locked: bool

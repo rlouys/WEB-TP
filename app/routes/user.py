@@ -58,7 +58,7 @@ async def create_user(request: Request, db: Session = Depends(get_db),
         return render_error_template(request, "signup.html", "Email ou nom d'utilisateur déjà utilisé.")
 
     hashed_password = generate_password_hash(new_password)  # Hashage du mot de passe
-    new_user = User(username=new_username, email=new_email, password_hash=hashed_password)  # Utilisez password_hash ici
+    new_user = User(username=new_username, email=new_email, password_hash=hashed_password, privileges="user", is_locked=0)  # Utilisez password_hash ici
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -95,41 +95,46 @@ async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
         "user": user_data
     })
 
-@router.post("/change-password", response_class=HTMLResponse)
-async def change_password(request: Request, db: Session = Depends(get_db), user_id: int = Depends(get_current_user),
-                          currentPassword: str = Form(...), newPassword: str = Form(...), confirmPassword: str = Form(...)):
-    # Chargement de l'utilisateur à partir de la base de données
-    user_data = db.query(User).filter(User.id == user_id).first()
-    if not user_data:
+
+@router.post("/update-profile")
+async def update_profile(request: Request, db: Session = Depends(get_db),
+                         username: str = Form(None), email: str = Form(None),
+                         currentPassword: str = Form(None), newPassword: str = Form(None), confirmPassword: str = Form(None)):
+    token = request.cookies.get('access_token', "").split(" ")[1]
+    user_id = get_user_id_from_token(token)
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
 
-    # Vérification du mot de passe actuel
-    if not check_password_hash(user_data.password_hash, currentPassword):
-        return templates.TemplateResponse("profil.html", {
-            "request": request,
-            "error": "Le mot de passe actuel est incorrect."
-        })
+    # Mise à jour du nom d'utilisateur et de l'email si fournis
+    if username:
+        user.username = username
+    if email:
+        user.email = email
 
-    # Vérification de la correspondance des nouveaux mots de passe
-    if newPassword != confirmPassword:
-        return templates.TemplateResponse("profil.html", {
-            "request": request,
-            "error": "Les nouveaux mots de passe ne correspondent pas."
-        })
+    # Gestion du changement de mot de passe
+    if currentPassword and newPassword and confirmPassword:
+        if not check_password_hash(user.password_hash, currentPassword):
+            return templates.TemplateResponse("profil.html", {
+                "request": request,
+                "error": "Le mot de passe actuel est incorrect."
+            })
+        if newPassword != confirmPassword:
+            return templates.TemplateResponse("profil.html", {
+                "request": request,
+                "error": "Les nouveaux mots de passe ne correspondent pas."
+            })
+        user.password_hash = generate_password_hash(newPassword)
 
-    # Mise à jour du mot de passe dans la base de données
-    try:
-        user_data.password_hash = generate_password_hash(newPassword)
-        db.commit()
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail="Erreur lors de la mise à jour du mot de passe")
+    db.commit()
 
+    # Retourner à la page de profil avec un message de confirmation
     return templates.TemplateResponse("profil.html", {
         "request": request,
-        "message": "Mot de passe mis à jour avec succès."
+        "user": user,
+        "message": "Profil mis à jour avec succès."
     })
-
 def render_error_template(request: Request, template_name: str, error_message: str,
                           status_code: int = 400):
     return templates.TemplateResponse(template_name, {
@@ -180,4 +185,5 @@ async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depen
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
 

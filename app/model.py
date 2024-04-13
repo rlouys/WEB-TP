@@ -1,6 +1,6 @@
 from pydantic import EmailStr
 from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func, Boolean
 from app.data.database import Base
 from datetime import datetime
 from sqlalchemy import Column, Integer, String
@@ -39,6 +39,7 @@ class User(Base):
     password_hash: Mapped[str] = Column(String(128))
     privileges: Mapped[str] = Column(String(120))
     date_added: Mapped[datetime] = Column(DateTime, server_default=func.now())
+    is_locked: Mapped[bool] = Column(Boolean)
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
