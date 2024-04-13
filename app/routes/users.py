@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.data.dependencies import get_db
 from app.login_manager import login_manager
 from app.model import User
 from app.services.users import get_user_by_username, get_user_by_email
@@ -13,6 +13,8 @@ from app.schemas import UserSchema
 
 router = APIRouter(prefix="/users")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 
 
 @router.post("/login")

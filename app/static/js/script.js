@@ -9,6 +9,45 @@ toggler.addEventListener("click", function () {
 
 
 /*******************************************************************
+   REDIRECT MODIFY (FROM LISTE)
+ *******************************************************************/
+
+function redirectToModify(livreId) {
+    const url = `/modifier?id=${livreId}`;
+    window.location.href = url; // Redirects the browser to the modify page
+}
+
+/*******************************************************************
+   CREATE RANDOM BOOKS
+ *******************************************************************/
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to the "Add Random Books" button
+    document.getElementById("add-random-books").addEventListener("click", async function() {
+        try {
+            // Make an asynchronous request to the backend to generate random books
+            const response = await fetch("/generate_random_books");
+            if (!response.ok) {
+                throw new Error("Failed to fetch data from the server");
+            }
+            const data = await response.json();
+
+            // Insert the generated random books into the HTML page
+            const booksContainer = document.getElementById("books-container");
+            data.forEach(book => {
+                const bookElement = document.createElement("div");
+                bookElement.textContent = `${book.nom} - ${book.auteur} - ${book.editeur} - ${book.price}€`;
+                booksContainer.appendChild(bookElement);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    });
+});
+
+
+
+/*******************************************************************
    SUPPRIMER UN LIVRE ( Affiche un message d'alerte SweetAlerts )
  *******************************************************************/
 function confirmDeletion(livreID) {

@@ -17,13 +17,16 @@
             <form id="mainForm">
 
                 <!-- NOM -->
-                {{ macro.generateFormField("nom", '', "Nom du livre", false) }}
+                {{ macro.generateFormField("nom", '', "Nom du livre", false, "text") }}
                 <br>
                 <!-- AUTEUR -->
-                {{ macro.generateFormField("auteur", '', 'Auteur', false) }}
+                {{ macro.generateFormField("auteur", '', 'Auteur', false, "text") }}
                 <br>
                 <!-- EDITEUR -->
-                {{ macro.generateFormField("editeur", '', 'Editeur', false) }}
+                {{ macro.generateFormField("editeur", '', 'Editeur', false, "text") }}
+                <br>
+                <!-- PRICE -->
+                {{ macro.generateFormField("price", '', 'Prix', false, "number") }}
                 <br><br>
 
                 <input type="hidden" name="boolContinue" id="continueInput">

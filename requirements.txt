@@ -10,3 +10,5 @@ python-multipart
 fastapi_login
 pydantic[email]
 bcrypt
+alembic
+faker
