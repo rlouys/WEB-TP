@@ -1,12 +1,22 @@
 <!-- MACRO POUR GÉNERER DES FORM FIELD -->
 
-{% macro generateFormField(id, value, placeholder, label) %}
-    <div class="form-floating" >
-        <input placeholder="{{placeholder}}" type="text" style="background-color: white; " id="{{ id }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank." >
+{% macro generateFormField(id, value, placeholder, label, type, step) %}
+    <div class="form-floating">
+        <input placeholder="{{placeholder}}"
+               step="{{ step }}"
+               type="{{ type }}"
+               style="background-color: white;"
+               id="{{ id }}"
+               name="{{ id }}"
+               class="form-control shadow-lg"
+               value="{{ value }}"
+               required
+               pattern="{{ '\\d*' if numeric_only else '\\S+.*' }}"
+               title="{{ 'This field cannot be blank.' }}" >
         <label for="{{ id }}" class="form-label">{{ placeholder|capitalize }}</label>
     </div>
-
 {% endmacro %}
+
 
 <!-- MACRO POUR GÉNERER DES SUBMIT BUTTON -->
 {% macro generateFormSubmit(class, placeholder ,retour) %}
@@ -18,14 +28,25 @@
 
         <button type="submit" class="{{ class }}"> {{ placeholder }} </button>
     </div>
+
 {% endmacro %}
-<!-- MACRO POUR GÉNERER LES CHAMPS PASSWORD (il faudrait mettre les caracteres *** je verrais demain ou un autre jour -->
-{% macro generateTypedFormField(id, value, placeholder, label, type) %}
-    <div class="form-floating">
-        <input placeholder="{{ placeholder }}" type="{{ type }}" style="background-color: white;" id="{{ id_pwd }}" name="{{ id }}" class="form-control shadow-lg" value="{{ value }}" required pattern="\S+.*" title="This field cannot be blank.">
-        <label for="{{ id }}" class="form-label">{{ placeholder|capitalize }}</label>
-    </div>
+
+{% macro generateNewFormField(id, value, placeholder, label, type, step) %}
+
+<div data-mdb-input-init class="form-outline" style="width: 22rem;">
+    <input step = " {{step}} " value="{{ value }}" type=" {{ type }} " id="{{ id }}" class="form-control" />
+    <label class="form-label" for="{{ id }}">Number input</label>
+</div>
+
 {% endmacro %}
+
+
+
+
+
+
+
+
 
 
 

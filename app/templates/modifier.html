@@ -35,15 +35,35 @@
                     <input type="hidden" value="{{ livre['id'] }}" name="id"/>
 
                     <!-- LIVRE NOM -->
-                    {{ macro.generateFormField("nom", livre.nom, '', true) }}
+                    {{ macro.generateFormField("nom", '', livre.nom, true, "text") }}
                     <br>
                     <!-- LIVRE AUTEUR -->
-                    {{ macro.generateFormField("auteur", livre.auteur, '', true) }}
+                    {{ macro.generateFormField("auteur", '', livre.auteur, true, "text") }}
                     <br>
 
                     <!-- LIVRE EDITEUR -->
-                    {{ macro.generateFormField("editeur", livre.editeur, '', true) }}
+                    {{ macro.generateFormField("editeur", '', livre.editeur, true, "text") }}
                     <br>
+                    <!-- if is_admin or is_owner -->
+                    {% if 1 %}
+
+                    {{ macro.generateNewFormField("typeNumber", livre.editeur, '', false, "text", "0.01") }}
+<br>
+
+                    <!-- LIVRE PRIX -->
+                    {{ macro.generateFormField("prix", '', livre.price|string + " €", true, "number", "0.01") }}
+
+                    {% else %}
+                    <div class="">
+                        <input type="text"
+                               style="background-color: lightgray;"
+                               class="form-control shadow-lg"
+                               value="{{livre.price}} €"
+                               required disabled>
+                    </div>
+                    {% endif %}
+                    <br>
+
                     {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true) }}
 
                 </form>

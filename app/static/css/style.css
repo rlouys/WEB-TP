@@ -202,11 +202,6 @@ footer.fixed-bottom {
     text-decoration: underline;
 }
 
-#sidebar-toggle:hover {
-  background-color: rgba(25,135,84,0.8); /* Green background */
-    border-radius: 30%;
-}
-
 
 /* CSS to highlight "Livres" when its dropdown is expanded */
 a#livres[aria-expanded="true"],
@@ -282,6 +277,8 @@ a.sidebar-link {
 }
 
 .nav-clue .page-link {
+    background-color: lightgrey;
+    border-color: #495057;
     color: darkgreen; /* Normal state color */
 }
 
@@ -355,7 +352,7 @@ input:focus + label {
     text-align:center;
     background-color:#ffffff;
     max-width: 50%;
-    max-height: 90%;
+    max-height: 95%;
 }
 
 
@@ -397,6 +394,28 @@ input:focus + label {
 ******************/
 
 /* BODY */
+
+body.darkmode #nombre-livre p{
+    color: #abd5bd !important;
+}
+
+body.darkmode a {
+    color: #abd5bd;
+}
+
+body.darkmode .btn.btn-outline-success {
+    color: #abd5bd;
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+/* Override button colors on hover */
+body.darkmode .btn.btn-outline-success:hover {
+    color: #abd5bd;
+    background-color: #495057;
+    border-color: #495057;
+}
+
 body.darkmode .nav-clue .page-link{
     color: #abd5bd;
     background-color: #343a40;
@@ -517,11 +536,5 @@ body.darkmode .form-group{
         margin-left: auto;
     }
 
-}
-
-#passwordFields {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.5s ease-out;
 }
 
