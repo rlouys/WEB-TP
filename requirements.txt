@@ -13,3 +13,4 @@ bcrypt
 alembic
 faker~=24.9.0
 jose
+werkzeug
