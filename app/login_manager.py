@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt, JWTError
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.model import User
 from sqlalchemy.orm import Session

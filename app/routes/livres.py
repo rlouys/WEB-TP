@@ -23,9 +23,7 @@ templates = Jinja2Templates(directory="app/templates")
 # PAGE BIBLIOTHEQUE - GET
 @router.get("/liste", response_class=HTMLResponse)
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
-
-
-
+    username = request.state.username
     #token = request.cookies.get('access_token')
     #if not token:
     #    raise HTTPException(status_code=401, detail="Unauthorized")
@@ -49,6 +47,7 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     url_context = {
         "request": request,
+        "username": username,
         "livres": livres_page,
         "page": page,
         "total_pages": total_pages,
@@ -81,6 +80,8 @@ async def modifier_livre(request: Request, db: Session = Depends(get_db), id: in
 # Page permettant de modifier une énigme (à modifier par un pop-up)
 @router.get("/modifier", response_class=HTMLResponse, name="modifier")
 async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
+    username = request.state.username
+
     # Query for the specific book by ID
     livre = db.query(Livre).filter(Livre.id == id).first()
 
@@ -89,7 +90,8 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
         max_id = db.query(func.max(Livre.id)).scalar() or 0
         return templates.TemplateResponse("modifier.html", {"request": request,
                                                             "livre": livre,
-                                                            "max_id": max_id })
+                                                            "max_id": max_id ,
+                                                            "username": username})
 
     # If the book is not found, render a 404 page
     return templates.TemplateResponse("404.html", {"request": request})

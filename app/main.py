@@ -8,6 +8,7 @@ from starlette.routing import Router
 from sqlalchemy.orm import Session
 
 from .login_manager import create_access_token, oauth2_scheme, verify_token
+from .middleware import AddUsernameToRequestMiddleware
 # FILES
 from .model import *
 from app.data.dependencies import get_db
@@ -39,10 +40,17 @@ app.include_router(otherpages.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request, db: Session = Depends(get_db)):
+    username = request.cookies.get("username", "Utilisateur")
+    # Incluez le nom d'utilisateur dans le contexte pour le rendre disponible pour main.html et index.html
+    return templates.TemplateResponse("index.html", {"request": request, "username": username})
 
-    return templates.TemplateResponse("index.html", {"request": request})
 
-
+@app.get("/some-page")
+async def some_page(request: Request):
+    # Ceci devrait afficher "admin" si l'utilisateur "admin" est connecté
+    username = request.cookies.get("username", "Utilisateur")
+    print("Username from cookie:", username)  # Pour déboguer, assurez-vous que ceci imprime "admin"
+    return templates.TemplateResponse("test.html", {"request": request, "username": username})
 
 ##############
 # PAGES D'ERREUR
@@ -68,3 +76,4 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 ##############
 
 app.include_router(router)
+app.add_middleware(AddUsernameToRequestMiddleware)

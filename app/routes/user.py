@@ -2,12 +2,8 @@ from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, R
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.exc import IntegrityError
-
 from sqlalchemy.orm import Session
-
-from app import login_manager
-from app.login_manager import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user, oauth2_scheme, \
+from app.login_manager import create_access_token, get_current_user, oauth2_scheme, \
     verify_token, get_user_id_from_token
 from app.model import *
 from app.data.dependencies import get_db
@@ -28,21 +24,6 @@ templates = Jinja2Templates(directory="app/templates")
 # USERS
 ##############
 
-
-@router.get("/home", response_class=HTMLResponse)
-async def home(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Vérifiez si l'utilisateur est récupéré correctement
-    if user:
-        logger.info(f"Nom d'utilisateur: {user.username}")  # Affiche le nom d'utilisateur dans la console
-    else:
-        logger.info("Aucun utilisateur trouvé")
-
-    return templates.TemplateResponse("main.html", {
-        "request": request,
-        "username": user.username if user else "Utilisateur"
-    })
-
-
 # Page de connexion
 @router.get("/connexion", response_class=HTMLResponse, name="connexion")
 async def connexion(request: Request):
@@ -54,15 +35,23 @@ async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestFor
     user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
     if user and user.verify_password(form_data.password):
         access_token = create_access_token(data={'sub': user.username, 'id': user.id})
-        response = RedirectResponse(url=f"/profil?user_id={user.id}", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, path="/")
+        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+        response.set_cookie(key="username", value=user.username, httponly=True)
         return response
     else:
-        # Pas besoin de modifier le statut ici car nous ne renvoyons pas une réponse 401
         return templates.TemplateResponse("connexion.html", {
-            "request": request,  # Utilisez request plutôt que response.request
+            "request": request,
             "error": "Nom d'utilisateur ou mot de passe invalide."
-        })  # Le statut par défaut est 200 OK
+        })
+
+router.get("/deconnexion")
+async def deconnexion(request: Request):
+    response = RedirectResponse(url="/")
+    response.delete_cookie("access_token")
+    response.delete_cookie("username")
+    return response
+
 @router.get("/inscription", response_class=HTMLResponse)
 async def inscription(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
