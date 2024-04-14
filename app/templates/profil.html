@@ -73,7 +73,8 @@
         <!-- USER USERNAME -->
         <div class="form-group">
             <label>Nom d'utilisateur</label>
-            <input type="text" class="form-control" name="username" value="{{ user.username }}"/>
+            <input type="text" class="form-control" name="username" id="username" value="{{ user.username }}"/>
+            <div class="invalid-feedback" id="usernameError">Please choose a unique and valid username.</div>
         </div>
 
         <br>
@@ -89,7 +90,8 @@
         <!-- USER EMAIL -->
         <div class="form-group">
             <label>E-mail</label>
-            <input type="text" class="form-control" name="email" value="{{ user.email }}"/>
+            <input type="text" class="form-control" name="email" id="email" value="{{ user.email }}"/>
+            <div class="invalid-feedback" id="emailError">This email is already in use.</div>
         </div>
 
         <br>

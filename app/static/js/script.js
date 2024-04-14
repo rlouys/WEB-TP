@@ -234,4 +234,83 @@ document.addEventListener('click', function (event) {
 });
 
 
+/*******************************************************************
+   VALIDATION ASYNCHRONE DU NOM D'UTILISATEUR ET DU MAIL
+ *******************************************************************/
+document.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.getElementById('submit-button');
+    const usernameInput = document.getElementById('username');
+    const usernameError = document.getElementById('usernameError');
+    const originalUsername = usernameInput.value;
 
+    // Fonction pour vérifier la validité du formulaire et activer/désactiver le bouton de soumission
+    function checkFormValidity() {
+        const isUsernameErrorVisible = usernameError.style.display === 'block';
+        submitBtn.disabled = isUsernameErrorVisible; // Désactive le bouton si une erreur est visible
+    }
+
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function(e) {
+            const newUsername = e.target.value;
+            if (newUsername === originalUsername) {
+                usernameError.style.display = 'none';
+            } else {
+                fetch(`/api/check-username?username=${encodeURIComponent(newUsername)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.is_unique) {
+                            usernameError.style.display = 'none';
+                        } else {
+                            usernameError.style.display = 'block';
+                            usernameError.innerText = "Please choose a unique and valid username."; // Mettez à jour le message si nécessaire
+                        }
+                        checkFormValidity(); // Vérifie si le formulaire est valide
+                    }).catch(error => {
+                        console.error('Error during username validation:', error);
+                    });
+            }
+            checkFormValidity(); // Vérifie aussi ici pour couvrir le cas où l'utilisateur revient à l'original
+        });
+    }
+
+    // Appelez la fonction checkFormValidity au chargement de la page pour définir l'état initial du bouton
+    checkFormValidity();
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    // Stocker le nom d'utilisateur original
+    const originalEmail = emailInput.value;
+
+      function checkFormValidity() {
+        const isEmailErrorVisible = emailError.style.display === 'block';
+        submitBtn.disabled = isEmailErrorVisible; // Désactive le bouton si une erreur est visible
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', function(e) {
+            const newEmail = e.target.value;
+            // Vérifier si le nom d'utilisateur est le même que l'original
+            if (newEmail === originalEmail) {
+                emailError.style.display = 'none';
+            } else {
+                // Vérifier si le nouveau nom d'utilisateur est déjà pris
+                fetch(`/api/check-email?email=${encodeURIComponent(newEmail)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.is_unique) {
+                            emailError.style.display = 'none';
+                        } else {
+                            emailError.style.display = 'block';
+                        }
+                    }).catch(error => {
+                        console.error('Error during email validation:', error);
+                    });
+                checkFormValidity()
+            }
+        });
+    }
+    checkFormValidity();
+});

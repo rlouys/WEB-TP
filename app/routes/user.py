@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, R
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import IntegrityError
 
 from sqlalchemy.orm import Session
 
@@ -105,36 +106,59 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
-        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+        return templates.TemplateResponse("profil.html", {
+            "request": request,
+            "error": "Utilisateur non trouvé"
+        })
 
-    # Mise à jour du nom d'utilisateur et de l'email si fournis
-    if username:
-        user.username = username
-    if email:
-        user.email = email
+    context = {"request": request, "user": user}  # Contexte de base pour le template
 
-    # Gestion du changement de mot de passe
-    if currentPassword and newPassword and confirmPassword:
-        if not check_password_hash(user.password_hash, currentPassword):
-            return templates.TemplateResponse("profil.html", {
-                "request": request,
-                "error": "Le mot de passe actuel est incorrect."
-            })
-        if newPassword != confirmPassword:
-            return templates.TemplateResponse("profil.html", {
-                "request": request,
-                "error": "Les nouveaux mots de passe ne correspondent pas."
-            })
-        user.password_hash = generate_password_hash(newPassword)
+    try:
+        if username:
+            existing_username = db.query(User).filter(User.username == username, User.id != user_id).first()
+            if existing_username:
+                context["error"] = "Le nom d'utilisateur est déjà utilisé."
+                return templates.TemplateResponse("profil.html", context)
+            user.username = username
 
-    db.commit()
+        if email:
+            existing_email = db.query(User).filter(User.email == email, User.id != user_id).first()
+            if existing_email:
+                context["error"] = "L'adresse email est déjà employée."
+                return templates.TemplateResponse("profil.html", context)
+            user.email = email
 
-    # Retourner à la page de profil avec un message de confirmation
-    return templates.TemplateResponse("profil.html", {
-        "request": request,
-        "user": user,
-        "message": "Profil mis à jour avec succès."
-    })
+        if currentPassword and newPassword and confirmPassword:
+            if not check_password_hash(user.password_hash, currentPassword):
+                context["error"] = "Le mot de passe actuel est incorrect."
+                return templates.TemplateResponse("profil.html", context)
+            if newPassword != confirmPassword:
+                context["error"] = "Les nouveaux mots de passe ne correspondent pas."
+                return templates.TemplateResponse("profil.html", context)
+            user.password_hash = generate_password_hash(newPassword)
+
+        db.commit()
+        context["message"] = "Profil mis à jour avec succès."
+        return templates.TemplateResponse("profil.html", context)
+    except IntegrityError as e:
+        db.rollback()
+        context["error"] = "Une erreur est survenue lors de la mise à jour du profil."
+        return templates.TemplateResponse("profil.html", context)
+
+
+@router.get("/api/check-username")
+async def check_username(username: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.username == username).first():
+        return {"is_unique": False}
+    return {"is_unique": True}
+
+@router.get("/api/check-email")
+async def check_email(email: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == email).first():
+        return {"is_unique": False}
+    return {"is_unique": True}
+
+
 def render_error_template(request: Request, template_name: str, error_message: str,
                           status_code: int = 400):
     return templates.TemplateResponse(template_name, {

@@ -538,3 +538,9 @@ body.darkmode .form-group{
 
 }
 
+/*************************
+     Messages d'erreur
+ ************************/
+.invalid-feedback {
+    margin-top: 5px !important;
+}
