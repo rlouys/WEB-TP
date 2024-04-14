@@ -5,6 +5,12 @@
 
 <div style="max-width:60vh; width: 100%; margin: auto;" class="listePage">
 
+        {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
     <br><br>
     <i class="fas fa-user-circle fa-lg" style="font-size:9vh; color:rgba(25, 135, 84, 0.5);"></i>
     <br><br><br>

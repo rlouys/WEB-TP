@@ -5,12 +5,18 @@
 
 <div style="max-width:60vh; width: 100%; margin: auto;" class="listePage">
 
+
     <br><br>
     <i class="fas fa-user-circle fa-lg" style="font-size:9vh; color:rgba(25, 135, 84, 0.5);"></i>
     <br><br><br>
 
-
-     <!-- FORM TO SUBMIT CONNEXION INFOS -->
+    <!-- Verifier si un message d'erreur est passé au template et l'afficher -->
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    <!-- FORM TO SUBMIT CONNEXION INFOS -->
     <form action="/connexion" method="POST" class="mb-3">
         <!-- USERNAME -->
         {{ macro.generateFormField('username', '', 'Nom d\'utilisateur ou e-mail', 'Nom d\'utilisateur ou e-mail') }}

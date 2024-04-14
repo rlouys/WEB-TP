@@ -74,15 +74,10 @@
         <div class="form-group">
             <label>Nom d'utilisateur</label>
             <input type="text" class="form-control" name="username" id="username" value="{{ user.username }}"/>
-            <div class="invalid-feedback" id="usernameError">Please choose a unique and valid username.</div>
-        </div>
-
-        <br>
-
-        <!-- USER PRIVILEGES -->
-        <div class="form-group">
-            <label>Privilèges</label>
-            <input type="text" class="form-control" name="privileges" value="{{ user.privileges }}"/>
+            <div class="invalid-feedback" id="usernameError"
+                 style="display:{{ 'block' if error_username else 'none' }};">
+                {{ error_username or '' }}
+            </div>
         </div>
 
         <br>
@@ -91,10 +86,20 @@
         <div class="form-group">
             <label>E-mail</label>
             <input type="text" class="form-control" name="email" id="email" value="{{ user.email }}"/>
-            <div class="invalid-feedback" id="emailError">This email is already in use.</div>
+            <div class="invalid-feedback" id="emailError" style="display: {{ 'block' if error_email else 'none' }};">
+                {{ error_email or '' }}
+            </div>
         </div>
 
         <br>
+        <!-- USER PRIVILEGES -->
+        <div class="form-group">
+            <label>Privilèges</label>
+            <input type="text" class="form-control" name="privileges" value="{{ user.privileges }}" readonly/>
+        </div>
+
+        <br>
+
 
         <!-- USER TEL -->
         <div class="form-group">
@@ -111,41 +116,60 @@
         <div class="accordion" id="accordion_pwd">
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    <button class="accordion-button {{ 'collapsed' if not (error_current_password or error_new_password or error_new_password_length or error_new_password_match or error_confirm_password) else '' }}"
+                            type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne"
+                            aria-expanded="{{ 'true' if (error_current_password or error_new_password or error_new_password_length or error_new_password_match or error_confirm_password) else 'false' }}"
+                            aria-controls="collapseOne">
                         Modifier mot de passe
                     </button>
                 </h2>
                 <!-- Password Change Fields -->
-                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion_pwd">
+                <div id="collapseOne"
+                     class="accordion-collapse collapse {{ 'show' if (error_current_password or error_new_password or error_new_password_length or error_new_password_match or error_confirm_password) else '' }}"
+                     data-bs-parent="#accordion_pwd">
                     <div class="accordion-body">
                         <div id="passwordChangeFields">
                             <div class="form-group">
                                 <label>Mot de passe actuel</label>
                                 <input type="password" class="form-control" name="currentPassword"
                                        placeholder="Mot de passe actuel">
+                                <div class="invalid-feedback" style="display: block;">
+                                    {{ error_current_password or '' }}
+                                </div>
                             </div>
+                            <br>
                             <div class="form-group">
                                 <label>Nouveau mot de passe</label>
                                 <input type="password" class="form-control" name="newPassword"
                                        placeholder="Nouveau mot de passe">
+                                <div class="invalid-feedback" style="display: block;">
+                                    {{ error_new_password or error_new_password_length or error_new_password_match }}
+                                </div>
                             </div>
+                            <br>
                             <div class="form-group">
                                 <label>Confirmer le nouveau mot de passe</label>
                                 <input type="password" class="form-control" name="confirmPassword"
                                        placeholder="Confirmer le nouveau mot de passe">
+                                <div class="invalid-feedback" style="display: block;">
+                                    {{ error_confirm_password or error_new_password_length or error_new_password_match
+                                    }}
+                                </div>
                             </div>
+                            <br>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
         <br>
 
         <!-- BUTTON -->
         <div class="flex items-center">
-            <button type="submit" class="btn btn-outline-success">
+            <button type="submit" id="submit-button" class="btn btn-outline-success">
                 Enregistrer
             </button>
         </div>
