@@ -23,17 +23,23 @@ function redirectToModify(livreId) {
    CREATE RANDOM BOOKS
  *******************************************************************/
 
+
 document.addEventListener("DOMContentLoaded", function() {
+
+    console.log("test1")
     // Add event listener to the "Add Random Books" button
     document.getElementById("add-random-books").addEventListener("click", async function() {
+        console.log("test2")
         try {
+            console.log("test3")
             // Make an asynchronous request to the backend to generate random books
+
             const response = await fetch("/generate_random_books");
             if (!response.ok) {
                 throw new Error("Failed to fetch data from the server");
             }
             const data = await response.json();
-
+            console.log("TEST")
             // Insert the generated random books into the HTML page
             const booksContainer = document.getElementById("books-container");
             data.forEach(book => {

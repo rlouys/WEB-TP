@@ -3,13 +3,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
-
-from app.login_manager import verify_token
 from app.model import *
 from app.data.dependencies import get_db
 
 from typing import Optional
 
+from app.login_manager import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user, oauth2_scheme, \
+    verify_token, get_user_id_from_token
 
 router = APIRouter()
 
@@ -23,24 +23,29 @@ templates = Jinja2Templates(directory="app/templates")
 # PAGE BIBLIOTHEQUE - GET
 @router.get("/liste", response_class=HTMLResponse)
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
+
+
+
+    #token = request.cookies.get('access_token')
+    #if not token:
+    #    raise HTTPException(status_code=401, detail="Unauthorized")
+    #else:
+    #    token = token[7:]
+
+    #if not verify_token(token):
+     #   raise HTTPException(status_code=401, detail="Unauthorized")
+
+
     per_page = 10
     offset = (page - 1) * per_page
-    '''
-    token = request.cookies.get('access_token')
-    if not token:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    else:
-        token = token[7:]
 
-    if not verify_token(token):
-        raise HTTPException(status_code=401, detail="Unauthorized")
-        '''
     # Query to get total number of books
     total_books = db.query(func.count(Livre.id)).scalar()
     total_pages = (total_books + per_page - 1) // per_page
 
     # Query to get books for the current page
     livres_page = db.query(Livre).offset(offset).limit(per_page).all()
+
 
     url_context = {
         "request": request,
@@ -115,7 +120,11 @@ async def ajouter_livre(request: Request):
 async def ajouter_livre(request: Request, db: Session = Depends(get_db), price: str = Form(...), nom: str = Form(...), auteur: str = Form(...),
                         editeur: str = Form(...), boolContinue: Optional[str] = Form(None)):
 
-
+    token = request.cookies.get('access_token')
+    token = token[7:]
+    # Get current user from token id
+    user_id_from_cookies = get_user_id_from_token(token)
+    print(user_id_from_cookies)
     # Ensure price is well-formatted
     normalized_price = price.replace(',', '.')
     try:
@@ -124,7 +133,7 @@ async def ajouter_livre(request: Request, db: Session = Depends(get_db), price: 
         raise HTTPException(status_code=400, detail="Invalid price format")
 
     # Create new Livre instance
-    new_livre = Livre(nom=nom, auteur=auteur, editeur=editeur, price = formatted_price, created_by = 1, modified_by = 1)
+    new_livre = Livre(nom=nom, auteur=auteur, editeur=editeur, price = formatted_price, created_by = user_id_from_cookies, modified_by = user_id_from_cookies, owner_id = user_id_from_cookies)
 
     # Add to the data
     db.add(new_livre)

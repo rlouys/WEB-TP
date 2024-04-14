@@ -57,6 +57,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         return templates.TemplateResponse("404.html", {"request": request, "requested": requested_path}, status_code=404)
     if exc.status_code == 502:
         return templates.TemplateResponse("502.html", {"request": request})
+    if exc.status_code == 401:
+        return templates.TemplateResponse("unauthorized.html", {"request": request})
     return templates.TemplateResponse("construction.html", {"request": request, "detail": exc.detail}, status_code=exc.status_code)
 
 
@@ -66,6 +68,3 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 ##############
 
 app.include_router(router)
-app.include_router(user.router)
-app.include_router(utilities.router)
-app.include_router(otherpages.router)

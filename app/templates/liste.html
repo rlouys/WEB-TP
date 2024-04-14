@@ -2,7 +2,7 @@
 {% block body %}
 <br>
 
-    <div style="max-width: 70%!important;" class="listePage">
+    <div style="max-width: 90%!important;" class="listePage">
         <h1>Bienvenue dans la bibliothèque!</h1>
         <br><br>
         <h4>Ici vous pouvez voir et gérer votre collection de livres.</h4>
@@ -42,7 +42,7 @@
                                     <td>{{livre.auteur}}</td>
                                     <td>{{livre.editeur}}</td>
                                     <td>{{livre.price}} €</td>
-                                    <td>{{livre.owner_id}}</td>
+                                    <td>{{livre.owner.username}}</td>
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">
@@ -129,13 +129,8 @@
 </div>
 
 
+
 {% endblock %}
 
-<!--
-    book_names = [faker.catch_phrase() for _ in range(50)]
-    authors = [faker.name() for _ in range(50)]
-    publishers = [faker.company() for _ in range(50)]
 
-    create_livres(db, book_names, authors, publishers)
--->
 

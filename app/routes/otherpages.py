@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, APIRouter, Form, Response
+from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -16,6 +16,10 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/infos", response_class=HTMLResponse, name = "infos")
 async def infos(request: Request):
     return templates.TemplateResponse("infos.html", {"request": request})
+
+@router.get("/unauthorized")
+async def protected_route():
+    raise HTTPException(status_code=401, detail="Unauthorized access")
 
 # Page 'en construction'
 @router.get("/construction", response_class=HTMLResponse)

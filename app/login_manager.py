@@ -33,6 +33,7 @@ def verify_token(token: str):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(payload)
         if payload.get("sub") is None:
             raise exception_de_credentials
         return payload  # Retour du payload complet pour plus de flexibilité

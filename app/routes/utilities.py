@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from faker import Faker
 from app.model import *
 
 from app.data.dependencies import get_db
+
+from app.login_manager import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user, oauth2_scheme, \
+    verify_token, get_user_id_from_token
 
 
 ##############
@@ -17,8 +20,14 @@ router = APIRouter()
 faker = Faker()
 
 @router.get("/generate_random_books", response_class=JSONResponse)
-async def generate_random_books(db: Session = Depends(get_db)):
+async def generate_random_books(request: Request, db: Session = Depends(get_db)):
     try:
+        token = request.cookies.get('access_token')
+        token = token[7:]
+        # Get current user from token id
+        user_id_from_cookies = get_user_id_from_token(token)
+
+
         # Generate random book details using Faker
         book_names = [faker.catch_phrase() for _ in range(10)]
         authors = [faker.name() for _ in range(10)]
@@ -34,9 +43,9 @@ async def generate_random_books(db: Session = Depends(get_db)):
                 editeur=publishers[i],
                 price=prices[i],
                 stock=1,  # Set stock to 1
-                created_by=1,  # Set the user ID who created the book
-                modified_by=1,  # Set the user ID who last modified the book
-                owner_id=1  # Set the user ID who owns the book
+                created_by=user_id_from_cookies,  # Set the user ID who created the book
+                modified_by=user_id_from_cookies,  # Set the user ID who last modified the book
+                owner_id=user_id_from_cookies  # Set the user ID who owns the book
             )
             db.add(livre)
             books.append({
