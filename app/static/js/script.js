@@ -19,36 +19,61 @@ function redirectToModify(livreId) {
     window.location.href = url; // Redirects the browser to the modify page
 }
 
+
+/*******************************************************************
+   AJOUTER RANDOM LIVRES REQUIRES CONNEXION
+ *******************************************************************/
+
+function launchAlert() {
+    Swal.fire({
+        title: 'Authentication Required',
+        text: "You need to be logged in to perform this action.",
+        icon: 'error',
+        showCancelButton: true,
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-outline-danger',
+            cancelButton: 'btn btn-outline-success',
+        },
+        confirmButtonText: 'Log in',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/connexion'; // Redirect to login page
+        }
+    });
+}
+
 /*******************************************************************
    CREATE RANDOM BOOKS
  *******************************************************************/
 
 
 document.addEventListener("DOMContentLoaded", function() {
+    const addButton = document.getElementById("add-random-books");
+    addButton.addEventListener("click", async function(event) {
+        event.preventDefault(); // Prevent the default action of the <a> tag
+        console.log("Button clicked");
 
-    console.log("test1")
-    // Add event listener to the "Add Random Books" button
-    document.getElementById("add-random-books").addEventListener("click", async function() {
-        console.log("test2")
         try {
-            console.log("test3")
-            // Make an asynchronous request to the backend to generate random books
-
             const response = await fetch("/generate_random_books");
-            if (!response.ok) {
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Books fetched successfully", data);
+
+                // Update the DOM with the new books
+
+                // Redirect to /liste or refresh the page to show updated books
+                console.log("Redirecting to /liste to show updated books.");
+                window.location.href = '/liste'; // Redirect to the list page
+            } else if (response.status === 401) {
+                // Handle the authentication error
+                launchAlert();
+            } else {
                 throw new Error("Failed to fetch data from the server");
             }
-            const data = await response.json();
-            console.log("TEST")
-            // Insert the generated random books into the HTML page
-            const booksContainer = document.getElementById("books-container");
-            data.forEach(book => {
-                const bookElement = document.createElement("div");
-                bookElement.textContent = `${book.nom} - ${book.auteur} - ${book.editeur} - ${book.price}€`;
-                booksContainer.appendChild(bookElement);
-            });
         } catch (error) {
-            console.error(error);
+            console.error("Error:", error);
         }
     });
 });
@@ -160,6 +185,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return null;
     }
+
+    function setDefaultCookieIfAbsent(name, defaultValue, days) {
+        var cookie = getCookie(name);
+        if (cookie === null) { // Cookie not set
+            setCookie(name, defaultValue, days);
+        }
+    }
+
+    setDefaultCookieIfAbsent('darkmode', 'false', 1);
+    setDefaultCookieIfAbsent('navmode', 'false', 1); // Assuming you also want a default for the navbar
+
+
 
     /************************************
       TOGGLE SIDEBAR MODE

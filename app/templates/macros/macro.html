@@ -31,11 +31,19 @@
 
 {% endmacro %}
 
-{% macro generateNewFormField(id, value, placeholder, label, type, step) %}
+{% macro generateNewFormField(id, value, placeholder, label, type, step, title, isPrice) %}
 
-<div data-mdb-input-init class="form-outline" style="width: 22rem;">
-    <input step = " {{step}} " value="{{ value }}" type=" {{ type }} " id="{{ id }}" class="form-control" />
-    <label class="form-label" for="{{ id }}">Number input</label>
+<div data-mdb-input-init class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+    {% if isPrice %}
+    <i class="fas fa-euro-sign trailing"></i>
+    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}"   class="form-control form-controls form-icon-trailing" />
+    <label class="form-label form-labels" for="{{ id }}">{{ title }}</label>
+
+    {% else %}
+    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}"   class="form-control form-controls" />
+    <label class="form-label form-labels" for="{{ id }}">{{ title }}</label>
+
+    {% endif %}
 </div>
 
 {% endmacro %}

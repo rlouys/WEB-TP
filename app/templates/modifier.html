@@ -20,8 +20,8 @@
 
 
         <!-- Main Content -->
-        <div class="col-md-8">
-            <div style="position: relative!important; padding: 20px!important; max-width:60vh; width: 100%; margin: auto;" class="listePage"  class="listePage">
+        <div class=" col-md-8">
+            <div style="position: relative!important; max-width:60vh; width: 100%; margin: auto;" class="listePage">
 
                 <h1>Livre {{ livre.id }} :</h1>
 
@@ -35,23 +35,23 @@
                     <input type="hidden" value="{{ livre['id'] }}" name="id"/>
 
                     <!-- LIVRE NOM -->
-                    {{ macro.generateFormField("nom", '', livre.nom, true, "text") }}
+                    {{ macro.generateNewFormField("nom", livre.nom, livre.nom, true, "text", '', "Titre") }}
                     <br>
+
+
                     <!-- LIVRE AUTEUR -->
-                    {{ macro.generateFormField("auteur", '', livre.auteur, true, "text") }}
+                    {{ macro.generateNewFormField("auteur", livre.auteur, livre.auteur, true, "text", '', "Auteur") }}
                     <br>
 
                     <!-- LIVRE EDITEUR -->
-                    {{ macro.generateFormField("editeur", '', livre.editeur, true, "text") }}
+                    {{ macro.generateNewFormField("editeur", livre.editeur, livre.editeur, true, "text", '', "Editeur") }}
                     <br>
+
                     <!-- if is_admin or is_owner -->
                     {% if 1 %}
 
-                    {{ macro.generateNewFormField("typeNumber", livre.editeur, '', false, "text", "0.01") }}
-<br>
-
                     <!-- LIVRE PRIX -->
-                    {{ macro.generateFormField("prix", '', livre.price|string + " €", true, "number", "0.01") }}
+                    {{ macro.generateNewFormField("prix", livre.price, livre.price, true, "number", "0.01", "Prix", 1) }}
 
                     {% else %}
                     <div class="">
@@ -62,6 +62,10 @@
                                required disabled>
                     </div>
                     {% endif %}
+                    <br>
+
+                    {{ macro.generateNewFormField("stock", livre.stock, livre.stock, true, "number", "1", "stock") }}
+
                     <br>
 
                     {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true) }}

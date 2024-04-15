@@ -416,6 +416,10 @@ body.darkmode .btn.btn-outline-success:hover {
     border-color: #495057;
 }
 
+body.darkmode .fas.fa-euro-sign{
+    color: white!important;
+}
+
 body.darkmode .nav-clue .page-link{
     color: #abd5bd;
     background-color: #343a40;
@@ -463,7 +467,24 @@ body.darkmode .btn-light {
 }
 
 body.darkmode .form-group{
-    color:white;
+    color:blue!important;
+}
+
+.form-labels{
+    color: darkgreen!important;
+}
+
+body.darkmode .form-controls{
+    color: white!important;
+}
+
+body.darkmode .form-labels{
+    color: #abd5bd!important;
+}
+
+
+body.darkmode .form-floating{
+    color:white!important;
 }
 
 

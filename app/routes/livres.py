@@ -23,16 +23,18 @@ templates = Jinja2Templates(directory="app/templates")
 # PAGE BIBLIOTHEQUE - GET
 @router.get("/liste", response_class=HTMLResponse)
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
-    username = request.state.username
-    #token = request.cookies.get('access_token')
-    #if not token:
-    #    raise HTTPException(status_code=401, detail="Unauthorized")
-    #else:
-    #    token = token[7:]
 
-    #if not verify_token(token):
-     #   raise HTTPException(status_code=401, detail="Unauthorized")
+    user_id = 0
+    user_name = ''
+    token = request.cookies.get('access_token')
 
+    if token:
+        token = token[7:]
+
+        if verify_token(token):
+            user_id = get_user_id_from_token(token)
+            userFromToken = db.query(User).filter(User.id == user_id).first()
+            user_name = userFromToken.username
 
     per_page = 10
     offset = (page - 1) * per_page
@@ -47,18 +49,29 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     url_context = {
         "request": request,
-        "username": username,
         "livres": livres_page,
         "page": page,
         "total_pages": total_pages,
-        "length": total_books
+        "length": total_books,
+        "user_id": user_id,
+        "user_name": user_name,
+        "user_isadmin": 1
     }
+
     return templates.TemplateResponse("liste.html", url_context)
 
 
 # PAGE MODIFIER LIVRE - POST
 @router.post("/liste", response_class=HTMLResponse)
-async def modifier_livre(request: Request, db: Session = Depends(get_db), id: int = Form(...), nom: str = Form(...), auteur: str = Form(...), editeur: str = Form(...)):
+async def modifier_livre(request: Request,
+                         db: Session = Depends(get_db),
+                         id: int = Form(...),
+                         nom: str = Form(...),
+                         auteur: str = Form(...),
+                         editeur: str = Form(...),
+                         prix: float = Form(...),
+                         stock: int = Form(...)
+                         ):
     # Fetch the book from the data
     livre = db.query(Livre).filter(Livre.id == id).first()
     if not livre:
@@ -68,6 +81,9 @@ async def modifier_livre(request: Request, db: Session = Depends(get_db), id: in
     livre.nom = nom
     livre.auteur = auteur
     livre.editeur = editeur
+    livre.price = prix
+    livre.stock = stock
+
     db.commit()
 
     # Redirect back to the book list
@@ -80,8 +96,6 @@ async def modifier_livre(request: Request, db: Session = Depends(get_db), id: in
 # Page permettant de modifier une énigme (à modifier par un pop-up)
 @router.get("/modifier", response_class=HTMLResponse, name="modifier")
 async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
-    username = request.state.username
-
     # Query for the specific book by ID
     livre = db.query(Livre).filter(Livre.id == id).first()
 
@@ -90,8 +104,7 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
         max_id = db.query(func.max(Livre.id)).scalar() or 0
         return templates.TemplateResponse("modifier.html", {"request": request,
                                                             "livre": livre,
-                                                            "max_id": max_id ,
-                                                            "username": username})
+                                                            "max_id": max_id })
 
     # If the book is not found, render a 404 page
     return templates.TemplateResponse("404.html", {"request": request})
@@ -101,7 +114,6 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 # Page permettant de supprimer un livre.
 @router.post("/supprimer", response_class=HTMLResponse, name="supprimer")
 async def supprimer_livre(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
-
     # Query for the specific book by ID and delete it
     livre_to_delete = db.query(Livre).filter(Livre.id == id).first()
     if livre_to_delete:
@@ -115,8 +127,8 @@ async def supprimer_livre(response: Response, id: int = Form(...), db: Session =
 # Page permettant d'ajouter un nouveau livre - GET
 @router.get("/ajouter", response_class=HTMLResponse, name="ajouter")
 async def ajouter_livre(request: Request):
-    username = request.state.username
-    return templates.TemplateResponse("ajouter.html",{"request": request, "username": username})
+
+    return templates.TemplateResponse("ajouter.html",{"request": request})
 
 
 @router.post("/ajouter", response_class=HTMLResponse, name="ajouter_post")
