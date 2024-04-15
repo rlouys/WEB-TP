@@ -130,68 +130,84 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
     token = request.cookies.get('access_token', "").split(" ")[1]
     user_id = get_user_id_from_token(token)
     user = db.query(User).filter(User.id == user_id).first()
-    username = request.cookies.get("username", "Utilisateur")
 
     if not user:
+        logger.error("User not found with ID: %s", user_id)
         return templates.TemplateResponse("profil.html", {
             "request": request,
             "error": "Utilisateur non trouvé"
         })
 
-    context = {"request": request, "user": user, "username": username}  # Contexte de base pour le template
+    context = {"request": request, "user": user, "username": username if username else user.username}
 
-    # Vérifications des entrées
+    # Vérification des entrées et gestion des erreurs
     errors = False
-    if username:
-        existing_username = db.query(User).filter(User.username == username, User.id != user_id).first()
+    if username and username != user.username:
+        existing_username = db.query(User).filter(User.username == username).first()
         if existing_username:
             context["error_username"] = "Le nom d'utilisateur est déjà utilisé."
             errors = True
 
-    if email:
-        existing_email = db.query(User).filter(User.email == email, User.id != user_id).first()
+    if email and email != user.email:
+        existing_email = db.query(User).filter(User.email == email).first()
         if existing_email:
             context["error_email"] = "L'adresse email est déjà employée."
             errors = True
 
-    # Validation pour les changements de mot de passe
-    if currentPassword or newPassword or confirmPassword:
+    if newPassword or confirmPassword:
         if not currentPassword:
             context["error_current_password"] = "Veuillez entrer votre mot de passe actuel."
             errors = True
         elif not check_password_hash(user.password_hash, currentPassword):
             context["error_current_password"] = "Le mot de passe actuel est incorrect."
             errors = True
-
-        if not newPassword:
-            context["error_new_password"] = "Veuillez entrer un nouveau mot de passe."
-            errors = True
-        elif len(newPassword) < 4:
-            context["error_new_password_length"] = "Le nouveau mot de passe doit contenir au moins 4 caractères."
-            errors = True
-
-        if not confirmPassword:
-            context["error_confirm_password"] = "Veuillez confirmer votre nouveau mot de passe."
-            errors = True
-        elif newPassword != confirmPassword:
+        if newPassword != confirmPassword:
             context["error_new_password_match"] = "Les nouveaux mots de passe ne correspondent pas."
+            errors = True
+        if len(newPassword) < 4:
+            context["error_new_password_length"] = "Le nouveau mot de passe doit contenir au moins 4 caractères."
             errors = True
 
     if errors:
         return templates.TemplateResponse("profil.html", context)
 
     # Mise à jour des informations valides
-    if username:
+    updated = False
+    if username and username != user.username:
         user.username = username
-    if email:
+        updated = True
+    if email and email != user.email:
         user.email = email
-    if newPassword:
+        updated = True
+    if newPassword and check_password_hash(user.password_hash, currentPassword):
         user.password_hash = generate_password_hash(newPassword)
+        updated = True
 
-    db.commit()
-    context["message"] = "Profil mis à jour avec succès."
-    return templates.TemplateResponse("profil.html", context)
+    if updated:
+        db.commit()
+        # Créer un nouveau token JWT avec les données mises à jour
+        new_token_data = {
+            'sub': user.username,
+            'id': user.id,
+            'privileges': user.privileges,
+            'is_locked': str(user.is_locked)
+        }
+        new_token = create_access_token(data=new_token_data)
+        # Mettre à jour le cookie avec le nouveau token
+        response = templates.TemplateResponse("profil.html", {
+            "request": request,
+            "message": "Profil mis à jour avec succès.",
+            "user": user  # Assurez-vous que l'objet user est correctement passé ici
+        })
+        response.set_cookie(key="access_token", value=f"Bearer {new_token}", httponly=True, secure=True, samesite='Lax')
+        return response
 
+    # Si aucune mise à jour n'est effectuée, retournez également l'utilisateur pour éviter 'user' is undefined
+    return templates.TemplateResponse("profil.html", {
+        "request": request,
+        "message": "Aucune modification nécessaire.",
+        "user": user  # Assurez-vous que l'objet user est correctement passé ici également
+    })
 
 @router.get("/api/check-username")
 async def check_username(username: str, db: Session = Depends(get_db)):
