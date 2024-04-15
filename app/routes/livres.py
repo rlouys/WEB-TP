@@ -101,6 +101,7 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 # Page permettant de supprimer un livre.
 @router.post("/supprimer", response_class=HTMLResponse, name="supprimer")
 async def supprimer_livre(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
+
     # Query for the specific book by ID and delete it
     livre_to_delete = db.query(Livre).filter(Livre.id == id).first()
     if livre_to_delete:
@@ -114,8 +115,8 @@ async def supprimer_livre(response: Response, id: int = Form(...), db: Session =
 # Page permettant d'ajouter un nouveau livre - GET
 @router.get("/ajouter", response_class=HTMLResponse, name="ajouter")
 async def ajouter_livre(request: Request):
-
-    return templates.TemplateResponse("ajouter.html",{"request": request})
+    username = request.state.username
+    return templates.TemplateResponse("ajouter.html",{"request": request, "username": username})
 
 
 @router.post("/ajouter", response_class=HTMLResponse, name="ajouter_post")

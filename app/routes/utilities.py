@@ -6,8 +6,7 @@ from app.model import *
 
 from app.data.dependencies import get_db
 
-from app.login_manager import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_current_user, oauth2_scheme, \
-    verify_token, get_user_id_from_token
+from app.login_manager import get_user_id_from_token
 
 
 ##############

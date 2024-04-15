@@ -15,7 +15,8 @@ templates = Jinja2Templates(directory="app/templates")
 # Page d'informations
 @router.get("/infos", response_class=HTMLResponse, name = "infos")
 async def infos(request: Request):
-    return templates.TemplateResponse("infos.html", {"request": request})
+    username = request.state.username
+    return templates.TemplateResponse("infos.html", {"request": request, "username": username})
 
 @router.get("/unauthorized")
 async def protected_route():
@@ -24,9 +25,11 @@ async def protected_route():
 # Page 'en construction'
 @router.get("/construction", response_class=HTMLResponse)
 async def read_play(request: Request):
-    return templates.TemplateResponse("construction.html", {"request": request})
+    username = request.state.username
+    return templates.TemplateResponse("construction.html", {"request": request, "username": username})
 
 # Erreur 502
 @router.get("/502", response_class=HTMLResponse)
 async def read_play(request: Request):
-    return templates.TemplateResponse("502.html", {"request": request})
+    username = request.state.username
+    return templates.TemplateResponse("502.html", {"request": request, "username": username})

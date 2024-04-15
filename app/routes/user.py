@@ -20,6 +20,7 @@ router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
 
+
 ##############
 # USERS
 ##############
@@ -31,26 +32,46 @@ async def connexion(request: Request):
 
 
 @router.post("/connexion")
-async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestForm = Depends(),
+                           db: Session = Depends(get_db)):
     user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
     if user and user.verify_password(form_data.password):
-        access_token = create_access_token(data={'sub': user.username, 'id': user.id})
-        response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
-        response.set_cookie(key="username", value=user.username, httponly=True)
-        return response
+        try:
+            # Créer un token avec toutes les données critiques
+            access_token = create_access_token(data={
+                'sub': user.username,
+                'id': user.id,
+                'privileges': user.privileges,
+                'is_locked': str(user.is_locked)  # Stocker comme string car il s'agit d'un booléen
+            })
+            response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+            # Stocker uniquement le access_token dans les cookies
+            response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, secure=True,
+                                samesite='Lax')
+            response.set_cookie(key="is_authenticated", value="true", httponly=True, secure=True, samesite='Lax')
+
+            return response
+        except Exception as e:
+            logging.error(f"Failed to create access token: {str(e)}")
+            return templates.TemplateResponse("connexion.html", {
+                "request": request,
+                "error": "Erreur interne du serveur."
+            })
     else:
         return templates.TemplateResponse("connexion.html", {
             "request": request,
             "error": "Nom d'utilisateur ou mot de passe invalide."
         })
 
-router.get("/deconnexion")
+
+@router.get("/deconnexion")
 async def deconnexion(request: Request):
     response = RedirectResponse(url="/")
-    response.delete_cookie("access_token")
-    response.delete_cookie("username")
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("is_authenticated", path="/")
+
     return response
+
 
 @router.get("/inscription", response_class=HTMLResponse)
 async def inscription(request: Request):
@@ -69,11 +90,13 @@ async def create_user(request: Request, db: Session = Depends(get_db),
         return render_error_template(request, "signup.html", "Email ou nom d'utilisateur déjà utilisé.")
 
     hashed_password = generate_password_hash(new_password)
-    new_user = User(username=new_username, email=new_email, password_hash=hashed_password, privileges="user", is_locked=0)
+    new_user = User(username=new_username, email=new_email, password_hash=hashed_password, privileges="user",
+                    is_locked=0)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    logger.info(f"Received data - Username: {new_username}, Email: {new_email}, Password: {new_password}, Confirm: {confirm_password}")
+    logger.info(
+        f"Received data - Username: {new_username}, Email: {new_email}, Password: {new_password}, Confirm: {confirm_password}")
     return templates.TemplateResponse("signup_success.html", {"request": request})
 
 
@@ -81,30 +104,22 @@ async def create_user(request: Request, db: Session = Depends(get_db),
 async def read_protected(user: UserSchema = Depends(get_current_user)):
     return {"message": "Hello, Protected World!"}
 
+
 ############################################################################################################################################
 
 # Page de profil de l'utilisateur
 @router.get("/profil", response_class=HTMLResponse, name="profil")
-async def profil(request: Request, user_id: int, db: Session = Depends(get_db)):
+async def profil(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
 
+    if not user:
+        return templates.TemplateResponse("404.html", {"request": request, "error": "Profil non trouvé"})
 
-    token = request.cookies.get('access_token')
-    token = token[7:]
-    # Get current user from token id
-    user_id_from_cookies = get_user_id_from_token(token)
-
-    user_data = db.query(User).filter(User.id == user_id).first()
-
-    if user_id != user_id_from_cookies:
-        raise HTTPException(status_code=403, detail="Not authorized to access this profile")
-
-    if not user_data:
-        return templates.TemplateResponse("404.html", {"request": request})
-
+        # Aucun besoin de vérifier le token ou d'extraire l'ID de l'utilisateur, tout est géré par `get_current_user`
     return templates.TemplateResponse("profil.html", {
-        "request": request,
-        "user": user_data
-    })
+            "request": request,
+            "username": user.username,
+            "user": user
+        })
 
 
 @router.post("/update-profile")
@@ -115,6 +130,7 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
     token = request.cookies.get('access_token', "").split(" ")[1]
     user_id = get_user_id_from_token(token)
     user = db.query(User).filter(User.id == user_id).first()
+    username = request.cookies.get("username", "Utilisateur")
 
     if not user:
         return templates.TemplateResponse("profil.html", {
@@ -122,7 +138,7 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
             "error": "Utilisateur non trouvé"
         })
 
-    context = {"request": request, "user": user}  # Contexte de base pour le template
+    context = {"request": request, "user": user, "username": username}  # Contexte de base pour le template
 
     # Vérifications des entrées
     errors = False
@@ -176,11 +192,13 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
     context["message"] = "Profil mis à jour avec succès."
     return templates.TemplateResponse("profil.html", context)
 
+
 @router.get("/api/check-username")
 async def check_username(username: str, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == username).first():
         return {"is_unique": False}
     return {"is_unique": True}
+
 
 @router.get("/api/check-email")
 async def check_email(email: str, db: Session = Depends(get_db)):
@@ -195,7 +213,10 @@ def render_error_template(request: Request, template_name: str, error_message: s
         "error": error_message  # Utilisez "error" comme clé pour que cela corresponde au template
     }, status_code=status_code)
 
+
 ''' tokens d'identification'''
+
+
 @router.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
@@ -206,6 +227,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token = create_access_token(data={"sub": user.username, 'id': user.id})
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @router.get("/users/me/")
 async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):

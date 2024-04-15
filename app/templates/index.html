@@ -1,52 +1,73 @@
 {% extends "main.html" %}
 {% block body %}
 
-    <main class="content px-3 py-2">
+<main class="content px-3 py-2">
 
-        <div class="container-fluid">
-            <div class="mb-3 listePage responsiveBox" style="max-width: 70vh!important;">
+    <div class="container-fluid">
+        <div class="mb-3 listePage responsiveBox" style="max-width: 70vh!important;">
 
-                <h1>Bienvenue sur H-Library !</h1>
-                <br/><br/>
-                <h4>Ici, vous pouvez consulter et gérer votre liste de livres facilement</h4>
-                <br/>
-                <h5>Par quoi commencer ? </h5>
-                <br>
+            <h1>Bienvenue sur H-Library !</h1>
+            <br/><br/>
+            <h4>Ici, vous pouvez consulter et gérer votre liste de livres facilement</h4>
+            <br/>
+            <h5>Par quoi commencer ? </h5>
+            <br>
 
 
-                <!-- BOUTON BIBLIOTHEQUE -->
-                <div>
-                    <a href="/liste">
-                        <button type="button" class="btn btn-success btn-lg w-75">
-                            <img src="../static/src/books2.png" alt="books" style="width:2em;height:2em; margin-right:0.5em;">Acceder a la bibliotheque
-                        </button>
-                    </a>
-                </div>
-
-                <br/>
-
-                <!-- BOUTON AJOUTER UN LIVRE -->
-                <div>
-                    <a href="/ajouter">
-                        <button type="button" class="btn btn-success btn-lg" style="width:75%;">
-                            <i class="fa-solid fa-book-open" style="margin-right: 0.5em;"></i>Ajouter un livre
-                        </button>
-                    </a>
-                </div>
-
-                <br/>
-
-                <!-- BOUTON SE CONNECTER -->
-                <div>
-                     <a href="/connexion">
-                        <button type="button" class="btn btn-success btn-lg" style="width:75%;">
-                            <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Se connecter
-                        </button>
-                    </a>
-                </div>
-                <br>
+            <!-- BOUTON BIBLIOTHEQUE -->
+            <div>
+                <a href="/liste">
+                    <button type="button" class="btn btn-success btn-lg w-75">
+                        <img src="../static/src/books2.png" alt="books"
+                             style="width:2em;height:2em; margin-right:0.5em;">Acceder a la bibliotheque
+                    </button>
+                </a>
             </div>
+
+            <br/>
+
+            <!-- BOUTON AJOUTER UN LIVRE -->
+            <div>
+                <a href="/ajouter">
+                    <button type="button" class="btn btn-success btn-lg" style="width:75%;">
+                        <i class="fa-solid fa-book-open" style="margin-right: 0.5em;"></i>Ajouter un livre
+                    </button>
+                </a>
+            </div>
+
+            <br/>
+            {% if is_authenticated %}
+            <!-- BOUTON PROFIL -->
+            <div>
+                <a href="/profil">
+                    <button type="button" class="btn btn-primary btn-lg" style="width:75%;">
+                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Profil
+                    </button>
+                </a>
+            </div>
+            <br/>
+
+            <!-- BOUTON DECONNEXION -->
+            <div>
+                <a href="/deconnexion">
+                    <button type="button" class="btn btn-danger btn-lg" style="width:75%;">
+                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Se déconnecter
+                    </button>
+                </a>
+            </div>
+            {% else %}
+            <!-- BOUTON SE CONNECTER -->
+            <div>
+                <a href="/connexion">
+                    <button type="button" class="btn btn-success btn-lg" style="width:75%;">
+                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Se connecter
+                    </button>
+                </a>
+            </div>
+            {% endif %}
+            <br>
         </div>
-    </main>
+    </div>
+</main>
 
 {% endblock %}
