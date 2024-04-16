@@ -565,3 +565,7 @@ body.darkmode .form-floating{
 .invalid-feedback {
     margin-top: 5px !important;
 }
+
+.pr-1{
+    padding-right: 0.1rem;
+}

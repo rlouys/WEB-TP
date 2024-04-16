@@ -25,6 +25,54 @@ templates = Jinja2Templates(directory="app/templates")
 # USERS
 ##############
 
+# PAGE BIBLIOTHEQUE - GET
+@router.get("/userlist", response_class=HTMLResponse)
+async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
+
+    user_id = 0
+    user_name = ''
+    user_isadmin = 0
+
+    token = request.cookies.get('access_token')
+
+    if token:
+        token = token[7:]
+
+        if verify_token(token):
+            user_id = get_user_id_from_token(token)
+            userFromToken = db.query(User).filter(User.id == user_id).first()
+            user_name = userFromToken.username
+            if (userFromToken.privileges == 'admin'):
+                user_isadmin = 1
+
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    # Query to get total number of books
+    total_users = db.query(func.count(User.id)).scalar()
+    total_pages = (total_users + per_page - 1) // per_page
+
+    # Query to get books for the current page
+    user_page = db.query(User).offset(offset).limit(per_page).all()
+
+    print(user_isadmin)
+
+    url_context = {
+        "request": request,
+        "users": user_page,
+        "page": page,
+        "total_pages": total_pages,
+        "length": total_users,
+        "user_id": user_id,
+        "username": user_name,
+        "user_isadmin": user_isadmin
+    }
+
+    return templates.TemplateResponse("users.html", url_context)
+
+
+
 # Page de connexion
 @router.get("/connexion", response_class=HTMLResponse, name="connexion")
 async def connexion(request: Request):
