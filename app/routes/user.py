@@ -185,7 +185,6 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
 
     if updated:
         db.commit()
-        # Créer un nouveau token JWT avec les données mises à jour
         new_token_data = {
             'sub': user.username,
             'id': user.id,
@@ -193,21 +192,13 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
             'is_locked': str(user.is_locked)
         }
         new_token = create_access_token(data=new_token_data)
-        # Mettre à jour le cookie avec le nouveau token
-        response = templates.TemplateResponse("profil.html", {
-            "request": request,
-            "message": "Profil mis à jour avec succès.",
-            "user": user  # Assurez-vous que l'objet user est correctement passé ici
-        })
+        response = RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="access_token", value=f"Bearer {new_token}", httponly=True, secure=True, samesite='Lax')
+        response.set_cookie(key="username", value=user.username, httponly=True, secure=True,
+                            samesite='Lax')  # Mise à jour du cookie username
         return response
 
-    # Si aucune mise à jour n'est effectuée, retournez également l'utilisateur pour éviter 'user' is undefined
-    return templates.TemplateResponse("profil.html", {
-        "request": request,
-        "message": "Aucune modification nécessaire.",
-        "user": user  # Assurez-vous que l'objet user est correctement passé ici également
-    })
+    return RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/api/check-username")
 async def check_username(username: str, db: Session = Depends(get_db)):
