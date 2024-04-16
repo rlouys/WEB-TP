@@ -3,15 +3,15 @@
 <br>
 
     <div style="max-width: 90%!important;" class="listePage">
-        <h1>Bienvenue dans la bibliothèque!</h1>
+        <h1>Bienvenue dans la bibliothèque d'utilisateurs!</h1>
         <br><br>
-        <h4>Ici vous pouvez voir et gérer votre collection de livres.</h4>
+        <h4>Ici vous pouvez voir et gérer votre collection de users.</h4>
         <br>
 
         <div class="header-container">
-            <h3>Liste des livres</h3>
+            <h3>Liste des utilisateurs</h3>
             <h6 id="nombre-livre" class="book-count-container">
-                Nombre de livres :
+                Nombre d'utilisateurs :
                 <p class="book-count" >{{length}}</p>
             </h6>
         </div>
@@ -22,13 +22,12 @@
                     <table class="table table-responsive-sm table-light table-hover" >
                         <thead>
                             <tr class="table-success">
-                                <th scope="col"><i class="fa-solid fa-book"></i> Titre</th>
-                                <th scope="col"><i class="fa-solid fa-user"></i> Auteur</th>
-                                <th scope="col"><i class="fa-solid fa-building"></i> Editeur</th>
-                                <th scope="col"><i class="fa-solid fa-tags"></i> Prix </th>
-                                <th scope="col"><i class="fa-solid fa-tags"></i> Stock </th>
-                                <th scope="col"><i class="fa-solid fa-key"></i> OwnerID </th>
-                                <th scope="col"><i class="fa-solid fa-key"></i> TokenID </th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-key pr-1"></i> ID</th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-user pr-1"></i> Username</th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-at pr-1"></i> Adresse e-mail</th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-layer-group pr-1"></i> Privileges </th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-calendar pr-1"></i> Date d'ajout </th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-link pr-1"></i> Bloqué </th>
 
                                 <!-- on gérera ici le fait d'afficher le propriétaire ou pas -->
                                 {% if 1 %}
@@ -38,35 +37,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for livre in livres %}
-                                {% if livre.stock > 0 or user_isadmin%}
+                            {% for user in users %}
                                 <tr>
-                                    <td>{{livre.nom}}</td>
-                                    <td>{{livre.auteur}}</td>
-                                    <td>{{livre.editeur}}</td>
-                                    <td>{{livre.price}} €</td>
-                                    <td>{{livre.stock}}</td>
-                                    <td>{{livre.owner.username}}</td>
-                                    <td>{{user_name}}</td>
+                                    <td><strong>{{user.id}}</strong></td>
+                                    <td>{{user.username}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.privileges}}</td>
+                                    <td>{{user.date_added}}</td>
+                                    <td>{{user.is_locked}}</td>
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">
-                                            {% if user_name == livre.owner.username or user_isadmin%}
-                                            <button type="button" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="redirectToModify({{ livre.id }})">
+                                            <button type="button" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="redirectToModify({{ user.id }})">
                                                 <i class="fa-regular fa-pen-to-square fa-xl"></i>
                                             </button>
-                                            {% endif %}
                                             <!-- BUTTON DELETE -->
-                                            {% if user_name == livre.owner.username or user_isadmin%}
-                                            <button type="submit" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="confirmDeletion({{livre.id}})">
+                                            <button type="submit" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="confirmDeletion({{user.id}})">
                                                 <i class="fa-solid fa-trash fa-xl"></i>
                                             </button>
-                                            {% endif %}
                                         </div>
 
                                     </td>
                                 </tr>
-                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

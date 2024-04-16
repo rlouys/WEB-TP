@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function() {
 /*******************************************************************
    SUPPRIMER UN LIVRE ( Affiche un message d'alerte SweetAlerts )
  *******************************************************************/
-function confirmDeletion(livreID) {
+function confirmDeletion(livreID, userID) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",

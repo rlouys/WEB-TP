@@ -1,0 +1,80 @@
+{% extends "main.html" %}
+{% block body %}
+
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center">
+
+        <!-- BOUTTON POUR PASSER AU user PRÉCÉDENT -->
+        <div class="col-auto d-flex align-items-center">
+            {% if user.id > 1 %}
+            <a href="/modifier?id={{user.id - 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            {% else %}
+            <a href="/modifier?id={{max_id}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            {% endif %}
+        </div>
+
+
+        <!-- Main Content -->
+        <div class=" col-md-8">
+            <div style="position: relative!important; max-width:60vh; width: 100%; margin: auto;" class="listePage">
+
+                <h1>Utilisateur {{ user.id }} :</h1>
+
+                <br><br><br>
+
+                <!-- FORM POUR MODIFIER LES INFOS D'UN user -->
+                <form id="modifier" action="/userlist" method="POST">
+
+
+
+                    <input type="hidden" value="{{ user['id'] }}" name="id"/>
+
+                    <!-- LIVRE NOM -->
+                    {{ macro.generateNewFormField("nom", user.username, user.username, true, "text", '', "Username") }}
+                    <br>
+
+                    {% else %}
+                    <div class="">
+                        <input type="text"
+                               style="background-color: lightgray;"
+                               class="form-control shadow-lg"
+                               value="{{user.price}} €"
+                               required disabled>
+                    </div>
+                    {% endif %}
+
+                    <br>
+
+                    {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true) }}
+
+                </form>
+
+            </div>
+        </div>
+
+
+
+        <!-- BOUTTON POUR PASSER AU LIVRE SUIVANT -->
+        <div class="col-auto d-flex align-items-center">
+
+
+            {% if user.id < max_id %}
+            <a href="/modifier?id={{user.id + 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% else %}
+            <a href="/modifier?id=1" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

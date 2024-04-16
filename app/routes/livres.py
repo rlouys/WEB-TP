@@ -26,6 +26,8 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     user_id = 0
     user_name = ''
+    user_isadmin = 0
+
     token = request.cookies.get('access_token')
 
     if token:
@@ -35,6 +37,9 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
             user_id = get_user_id_from_token(token)
             userFromToken = db.query(User).filter(User.id == user_id).first()
             user_name = userFromToken.username
+            if (userFromToken.privileges == 'admin'):
+                user_isadmin = 1
+
 
     per_page = 10
     offset = (page - 1) * per_page
@@ -46,6 +51,7 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
     # Query to get books for the current page
     livres_page = db.query(Livre).offset(offset).limit(per_page).all()
 
+    print(user_isadmin)
 
     url_context = {
         "request": request,
@@ -54,8 +60,8 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
         "total_pages": total_pages,
         "length": total_books,
         "user_id": user_id,
-        "user_name": user_name,
-        "user_isadmin": 1
+        "username": user_name,
+        "user_isadmin": user_isadmin
     }
 
     return templates.TemplateResponse("liste.html", url_context)
