@@ -44,11 +44,13 @@ async def read_root(request: Request, db: Session = Depends(get_db)):
 
     username = user_data['sub'] if user_data else "Utilisateur"
     is_authenticated = user_data is not None
+    privileges = user_data['privileges'] if user_data else None
 
     return templates.TemplateResponse("index.html", {
         "request": request,
         "username": username,
-        "is_authenticated": is_authenticated
+        "is_authenticated": is_authenticated,
+        "privileges": privileges
     })
 
 

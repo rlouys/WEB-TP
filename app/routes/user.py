@@ -291,3 +291,5 @@ async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depen
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+

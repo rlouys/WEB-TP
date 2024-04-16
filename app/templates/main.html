@@ -106,11 +106,17 @@
                         {{ username | default('Utilisateur') }}
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                        <li class="sidebar-item">
-                            <a href="/connexion" class="sidebar-link">Connexion</a>
-                        </li>
+                        {% if privileges == "admin" %}
                         <li class="sidebar-item">
                             <a href="/userlist" class="sidebar-link">Liste</a>
+                        </li>
+                        {% endif %}
+                        <li class="sidebar-item">
+                            {% if is_authenticated %}
+                            <a href="/deconnexion" class="sidebar-link">Déconnexion</a>
+                            {% else %}
+                            <a href="/connexion" class="sidebar-link">Connexion</a>
+                            {% endif %}
                         </li>
                     </ul>
                 </li>
