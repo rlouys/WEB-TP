@@ -14,8 +14,15 @@ toggler.addEventListener("click", function () {
    REDIRECT MODIFY (FROM LISTE)
  *******************************************************************/
 
-function redirectToModify(livreId) {
-    const url = `/modifier?id=${livreId}`;
+function redirectToModify(livreId, userId) {
+
+    let url = '';
+
+    if(livreId != null){
+        url = `/modifier?id=${livreId}`;}
+    else{
+        url = `/modifier_user?id=${userId}`;}
+
     window.location.href = url; // Redirects the browser to the modify page
 }
 
@@ -98,14 +105,21 @@ function confirmDeletion(livreID, userID) {
     }).then((result) => {
         if (result.isConfirmed) {
 
+            if(livreID != null){
+                action = '/supprimer';
+                value = livreID;
+            }else{
+                action = '/supprimer_user';
+                value = userID;
+            }
             var form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/supprimer';
+            form.action = action;
 
             var hiddenField = document.createElement('input');
             hiddenField.type = 'hidden';
             hiddenField.name = 'id';
-            hiddenField.value = livreID;
+            hiddenField.value = value;
             form.appendChild(hiddenField);
 
             document.body.appendChild(form);

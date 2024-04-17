@@ -7,11 +7,11 @@
         <!-- BOUTTON POUR PASSER AU user PRÉCÉDENT -->
         <div class="col-auto d-flex align-items-center">
             {% if user.id > 1 %}
-            <a href="/modifier?id={{user.id - 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+            <a href="/modifier_user?id={{user.id - 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             {% else %}
-            <a href="/modifier?id={{max_id}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+            <a href="/modifier_user?id={{max_id}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
 
@@ -34,23 +34,53 @@
 
                     <input type="hidden" value="{{ user['id'] }}" name="id"/>
 
-                    <!-- LIVRE NOM -->
-                    {{ macro.generateNewFormField("nom", user.username, user.username, true, "text", '', "Username") }}
+                    <!-- USER USERNAME -->
+                    {{ macro.generateNewFormField("username", user.username, user.username, true, "text", '', "Username") }}
                     <br>
 
-                    {% else %}
-                    <div class="">
-                        <input type="text"
-                               style="background-color: lightgray;"
-                               class="form-control shadow-lg"
-                               value="{{user.price}} €"
-                               required disabled>
+                    <!-- USER EMAIL ADDRESS -->
+                    {{ macro.generateNewFormField("email", user.email, user.email, true, "text", '', "email") }}
+                    <br>
+
+                    <!-- USER PRIVILEGES -->
+                    {{ macro.generateNewFormField("privileges", user.privileges, user.privileges, true, "text", '', "privileges") }}
+                    <br>
+
+                    <!-- USER PASSWORD -->
+                    {{ macro.generateNewFormField("password", '', user.password_hash, true, "password", '', "New Password") }}
+                    <br>
+
+                    <!-- CONFIRM PASSWORD -->
+                    {{ macro.generateNewFormField("confirm_password", '', '', true, "password", '', "Confirm Password") }}
+
+                    <div class="btn-group user-radio" style="margin-bottom: 2rem;">
+                      <!-- Radio button for "Locked" -->
+                      <input type="radio" class="btn-check" name="is_locked" id="option1" value="true" autocomplete="off" />
+                      <label class="btn btn-success" for="option1" data-mdb-ripple-init>Bloqué</label>
+
+                      <!-- Radio button for "lock" -->
+                        {% if user.is_locked %}
+
+                      <input type="radio" class="btn-check" name="is_locked" id="option2" value="true" autocomplete="off" checked/>
+                      <label class="btn" for="option2" data-mdb-ripple-init>Oui</label>
+                      <input type="radio" class="btn-check" name="is_locked" id="option3" value="false" autocomplete="off"/>
+                      <label class="btn" for="option3" data-mdb-ripple-init>Non</label>
+
+                        {% else %}
+
+                      <input type="radio" class="btn-check" name="is_locked" id="option2" value="true" autocomplete="off" />
+                      <label class="btn" for="option2" data-mdb-ripple-init>Oui</label>
+                      <input type="radio" class="btn-check" name="is_locked" id="option3" value="false" autocomplete="off" checked/>
+                      <label class="btn" for="option3" data-mdb-ripple-init>Non</label>
+
+                        {% endif %}
+
+                      <!-- Default Radio button for "Unlocked" checked by default -->
                     </div>
-                    {% endif %}
 
                     <br>
 
-                    {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true) }}
+                    {{ macro.generateFormSubmit("btn btn-outline-success", "Modifier", true, "/userlist") }}
 
                 </form>
 
@@ -64,11 +94,11 @@
 
 
             {% if user.id < max_id %}
-            <a href="/modifier?id={{user.id + 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+            <a href="/modifier_user?id={{user.id + 1}}" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
             {% else %}
-            <a href="/modifier?id=1" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
+            <a href="/modifier_user?id=1" class="btn btn-outline-success" style="font-size: 24px; cursor: pointer; display: inline-block; text-align: center;">
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
             {% endif %}

@@ -48,11 +48,11 @@
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">
-                                            <button type="button" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="redirectToModify({{ user.id }})">
+                                            <button type="button" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="redirectToModify(null,{{ user.id }})">
                                                 <i class="fa-regular fa-pen-to-square fa-xl"></i>
                                             </button>
                                             <!-- BUTTON DELETE -->
-                                            <button type="submit" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="confirmDeletion({{user.id}})">
+                                            <button type="submit" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="confirmDeletion(null, {{ user.id }})">
                                                 <i class="fa-solid fa-trash fa-xl"></i>
                                             </button>
                                         </div>

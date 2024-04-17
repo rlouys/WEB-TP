@@ -569,3 +569,21 @@ body.darkmode .form-floating{
 .pr-1{
     padding-right: 0.1rem;
 }
+
+.user-radio .user-radio:checked + label{
+    box-shadow: 0px 0px 10px green; /* X-offset, Y-offset, Blur radius, Color */
+    color: black;
+    background-color: #efffee;
+}
+
+#option2:checked + label,
+#option3:checked + label {
+    box-shadow: 0px 0px 10px green; /* X-offset, Y-offset, Blur radius, Color */
+    color: green;  /* Change text color to green when checked */
+    font-weight: bold; /* Make the text bold */
+}
+
+#option2:checked + label:hover,
+#option3:checked + label:hover {
+    box-shadow: 0px 0px 10px green!important; /* Keep the same shadow on hover */
+}

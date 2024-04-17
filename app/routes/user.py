@@ -71,7 +71,76 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     return templates.TemplateResponse("users.html", url_context)
 
+############################################################################################################################################
 
+# PAGE MODIFIER LIVRE - POST
+@router.post("/userlist", response_class=HTMLResponse)
+async def modifier_livre(request: Request,
+                         db: Session = Depends(get_db),
+                         id: int = Form(...),
+                         username: str = Form(...),
+                         email: str = Form(...),
+                         privileges: str = Form(...),
+                         password: Optional[str] = Form(None),
+                         confirm_password: Optional[str] = Form(None),
+                         is_locked: bool = Form(...)
+                         ):
+    # Fetch the book from the data
+    user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Update the book details
+    user.username = username
+    user.email = email
+    user.privileges = privileges
+    user.is_locked = is_locked
+
+    if password and confirm_password and password == confirm_password:
+        user.password_hash = generate_password_hash(password)
+    elif password or confirm_password:
+        raise HTTPException(status_code=400, detail="Both password and confirm password must be provided and match.")
+
+
+    db.commit()
+
+    # Redirect back to the user list
+    response = RedirectResponse(url="/userlist", status_code=303)
+    return response
+
+############################################################################################################################################
+
+# Page permettant de modifier une énigme (à modifier par un pop-up)
+@router.get("/modifier_user", response_class=HTMLResponse, name="modifier_user")
+async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
+    # Query for the specific book by ID
+    user = db.query(User).filter(User.id == id).first()
+
+    # If the book is found, render the modification page with the book's details
+    if user:
+        max_id = db.query(func.max(User.id)).scalar() or 0
+        return templates.TemplateResponse("modifier_user.html", {"request": request,
+                                                            "user": user,
+                                                            "max_id": max_id })
+
+    # If the book is not found, render a 404 page
+    return templates.TemplateResponse("404.html", {"request": request})
+
+
+############################################################################################################################################
+
+# Page permettant de supprimer un livre.
+@router.post("/supprimer_user", response_class=HTMLResponse, name="supprimer_user")
+async def supprimer_user(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
+    # Query for the specific book by ID and delete it
+    user_to_delete = db.query(User).filter(User.id == id).first()
+    if user_to_delete:
+        db.delete(user_to_delete)
+        db.commit()
+
+    return RedirectResponse(url="/userlist", status_code=303)
+
+############################################################################################################################################
 
 # Page de connexion
 @router.get("/connexion", response_class=HTMLResponse, name="connexion")
@@ -83,8 +152,14 @@ async def connexion(request: Request):
 async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(get_db)):
     user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
-    if user and user.verify_password(form_data.password):
+    if user and user.verify_password(form_data.password) :
         try:
+            if user.is_locked:
+                return templates.TemplateResponse("connexion.html", {
+                    "request": request,
+                    "error": "L'utilisateur est bloqué !"
+                })
+
             # Créer un token avec toutes les données critiques
             access_token = create_access_token(data={
                 'sub': user.username,
