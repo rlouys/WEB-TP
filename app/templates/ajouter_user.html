@@ -14,7 +14,7 @@
                 <br><br><br>
 
                 <!-- FORM POUR MODIFIER LES INFOS D'UN user -->
-                <form id="ajouter_user" action="" method="POST">
+                <form id="ajouter_user" action='' method="POST">
 
                     <!-- USER USERNAME -->
                     {{ macro.generateNewFormField("username", '', '', true, "text", '', "Username") }}
@@ -63,7 +63,7 @@
 
                     <div class="form-group">
                         <a href="/userlist" class="btn btn-outline-secondary">Retour</a>
-                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/userlistadd')">Ajouter</button>
+                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/userlist')">Ajouter</button>
                         <button type="submit" class="btn btn-outline-success" onclick="submitForm('/ajouter_user')">Continuer</button>
                     </div>
                 </form>

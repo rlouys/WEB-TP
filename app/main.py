@@ -75,13 +75,25 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     # ERREUR 404 (Page not found)
     if exc.status_code == 404:
         requested_path = request.url.path  # On récupère le lien qui a été tenté afin de dire qu'il n'existe pas.
-        return templates.TemplateResponse("404.html", {"request": request, "requested": requested_path},
+        return templates.TemplateResponse("404.html", {"request": request, "requested": requested_path,
+                                                       "is_authenticated": request.state.is_authenticated,
+                                                       "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                       "username": request.state.username
+                                                       },
                                           status_code=404)
     if exc.status_code == 502:
         return templates.TemplateResponse("502.html", {"request": request})
     if exc.status_code == 401:
-        return templates.TemplateResponse("unauthorized.html", {"request": request})
-    return templates.TemplateResponse("construction.html", {"request": request, "detail": exc.detail},
+        return templates.TemplateResponse("unauthorized.html", {"request": request,
+                                                                "is_authenticated": request.state.is_authenticated,
+                                                                "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                                "username": request.state.username
+                                                                })
+    return templates.TemplateResponse("construction.html", {"request": request, "detail": exc.detail,
+                                                            "is_authenticated": request.state.is_authenticated,
+                                                            "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                            "username": request.state.username
+                                                            },
                                       status_code=exc.status_code)
 
 

@@ -5,17 +5,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import not_
 from faker import Faker
 from app.model import *
-import logging
-
-# Set up basic configuration
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# You can also set up more detailed configurations:
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-
-
 
 from app.data.dependencies import get_db
 
@@ -110,11 +99,9 @@ async def empty_user_keep_admin(db: Session = Depends(get_db)):
 
 @router.get("/generate_random_user", response_class=JSONResponse)
 async def generate_random_user(request: Request, db: Session = Depends(get_db)):
-    logging.info("Generating random users")
     token = request.cookies.get('access_token')
 
     if token is None:
-        logging.warning("No access token provided")
         return JSONResponse(status_code=401, content={"error": "Authentication required"})
 
     token = token[7:]  # Assuming the token starts with 'Bearer '
@@ -122,18 +109,18 @@ async def generate_random_user(request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id_from_cookies).first()
 
     if user.privileges != "admin":
-        logging.error("Unauthorized access attempt")
         return JSONResponse(status_code=403, content={"error": "Only admins can perform this action"})
 
     try:
         users = []
-        for _ in range(10):
+        password = "Password123"
+        privileges = "user"
+        is_locked = False
+        hashed_password = generate_password_hash(password)
+
+        for _ in range(5):
             username = faker.user_name()
             email = faker.email()
-            privileges = "user"
-            is_locked = False
-            password = "Password123"
-            hashed_password = generate_password_hash(password)
 
             new_user = User(
                 username=username,
@@ -152,10 +139,9 @@ async def generate_random_user(request: Request, db: Session = Depends(get_db)):
             })
 
         db.commit()
-        logging.info("Random users generated successfully")
+        print("TEST")
         return users
     except Exception as e:
         db.rollback()
-        logging.error(f"Failed to generate random users: {str(e)}")
         return JSONResponse(status_code=500, content={"error": "Internal server error: " + str(e)})
 

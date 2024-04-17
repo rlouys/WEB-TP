@@ -2,11 +2,14 @@ from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, R
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
+
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.login_manager import create_access_token, get_current_user, oauth2_scheme, \
     verify_token, get_user_id_from_token
 from app.model import *
 from app.data.dependencies import get_db
+
 
 from typing import Optional
 from app.schemas import UserSchema
@@ -30,21 +33,6 @@ templates = Jinja2Templates(directory="app/templates")
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     user_id = 0
-    user_name = ''
-    user_isadmin = 0
-
-    token = request.cookies.get('access_token')
-
-    if token:
-        token = token[7:]
-
-        if verify_token(token):
-            user_id = get_user_id_from_token(token)
-            userFromToken = db.query(User).filter(User.id == user_id).first()
-            user_name = userFromToken.username
-            if (userFromToken.privileges == 'admin'):
-                user_isadmin = 1
-
 
     per_page = 10
     offset = (page - 1) * per_page
@@ -56,8 +44,6 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
     # Query to get books for the current page
     user_page = db.query(User).offset(offset).limit(per_page).all()
 
-    print(user_isadmin)
-
     url_context = {
         "request": request,
         "users": user_page,
@@ -65,9 +51,12 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
         "total_pages": total_pages,
         "length": total_users,
         "user_id": user_id,
-        "username": user_name,
-        "user_isadmin": user_isadmin
+        "is_authenticated": request.state.is_authenticated,
+        "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+        "username": request.state.username
     }
+
+
 
     return templates.TemplateResponse("users.html", url_context)
 
@@ -77,7 +66,7 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 @router.post("/userlist", response_class=HTMLResponse)
 async def modifier_user(request: Request,
                          db: Session = Depends(get_db),
-                         id: int = Form(...),
+                         id: Optional[int] = Form(None),
                          username: str = Form(...),
                          email: str = Form(...),
                          privileges: str = Form(...),
@@ -85,24 +74,47 @@ async def modifier_user(request: Request,
                          confirm_password: Optional[str] = Form(None),
                          is_locked: bool = Form(...)
                          ):
-    # Fetch the book from the data
+
+    if len(password) < 4:
+        return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.")
+    if password != confirm_password:
+        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
+    # Verifie si le username existe déjà dans la DB
+    if db.query(User).filter(
+            (func.lower(User.email) == func.lower(email)) |
+            (func.lower(User.username) == func.lower(username))
+    ).first():
+        return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
+
+
     user = db.query(User).filter(User.id == id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        new_user = User(
+            username=username,
+            email=email,
+            privileges=privileges,
+            password_hash=generate_password_hash(password),
+            is_locked=is_locked
+        )
 
-    # Update the book details
-    user.username = username
-    user.email = email
-    user.privileges = privileges
-    user.is_locked = is_locked
+        # Add to the data
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
 
-    if password and confirm_password and password == confirm_password:
-        user.password_hash = generate_password_hash(password)
-    elif password or confirm_password:
-        raise HTTPException(status_code=400, detail="Both password and confirm password must be provided and match.")
+    else:
+    # Update the user details
+        user.username = username
+        user.email = email
+        user.privileges = privileges
+        user.is_locked = is_locked
 
+        if password and confirm_password and password == confirm_password:
+            user.password_hash = generate_password_hash(password)
+        elif password or confirm_password:
+            raise HTTPException(status_code=400, detail="Both password and confirm password must be provided and match.")
 
-    db.commit()
+        db.commit()
 
     # Redirect back to the user list
     response = RedirectResponse(url="/userlist", status_code=303)
@@ -110,33 +122,6 @@ async def modifier_user(request: Request,
 
 
 ############################################################################################################################################
-# PERMET A UN ADMIN D AJOUTER UN UTILISATEUR (RECURSE SUR USERLIST)
-@router.post("/userlistadd", response_class=HTMLResponse)
-async def ajouter_user(request: Request,
-                         db: Session = Depends(get_db),
-                         username: str = Form(...),
-                         email: str = Form(...),
-                         privileges: str = Form(...),
-                         password: Optional[str] = Form(None),
-                         confirm_password: Optional[str] = Form(None),
-                         is_locked: bool = Form(...)
-                         ):
-
-    # Create new User instance
-    new_user = User(
-                    username=username,
-                    email=email,
-                    privileges=privileges,
-                    password_hash = generate_password_hash(password),
-                    is_locked = is_locked
-                   )
-
-    # Add to the data
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
-
-    return RedirectResponse(url="/userlist", status_code=303)
 
 ############################################################################################################################################
 
@@ -151,6 +136,17 @@ async def ajouter_user(request: Request,
                          confirm_password: Optional[str] = Form(None),
                          is_locked: bool = Form(...)
                          ):
+
+    if len(password) < 4:
+        return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.")
+    if password != confirm_password:
+        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
+    # Verifie si le username existe déjà dans la DB
+    if db.query(User).filter(
+            (func.lower(User.email) == func.lower(email)) |
+            (func.lower(User.username) == func.lower(username))
+    ).first():
+        return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
 
     # Create new User instance
     new_user = User(
@@ -181,10 +177,19 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
         max_id = db.query(func.max(User.id)).scalar() or 0
         return templates.TemplateResponse("modifier_user.html", {"request": request,
                                                             "user": user,
-                                                            "max_id": max_id })
+                                                            "max_id": max_id,
+                                                             "is_authenticated": request.state.is_authenticated,
+                                                             "privileges": getattr(request.state, 'privileges','Utilisateur'),
+                                                             "username": request.state.username
+
+                                                             })
 
     # If the book is not found, render a 404 page
-    return templates.TemplateResponse("404.html", {"request": request})
+    return templates.TemplateResponse("404.html", {"request": request,
+                                                   "is_authenticated": request.state.is_authenticated,
+                                                   "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                   "username": request.state.username
+                                                   })
 
 
 ############################################################################################################################################
@@ -192,7 +197,11 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 @router.get("/ajouter_user", response_class=HTMLResponse, name="ajouter_user")
 async def ajouter_livre(request: Request):
 
-    return templates.TemplateResponse("ajouter_user.html",{"request": request})
+    return templates.TemplateResponse("ajouter_user.html",{"request": request,
+                                                           "is_authenticated": request.state.is_authenticated,
+                                                           "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                           "username": request.state.username
+                                                           })
 
 
 ############################################################################################################################################
@@ -220,7 +229,11 @@ async def connexion(request: Request):
 @router.post("/connexion")
 async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(get_db)):
-    user = db.query(User).filter((User.email == form_data.username) | (User.username == form_data.username)).first()
+    user = db.query(User).filter(
+        (func.lower(User.email) == func.lower(form_data.username)) |
+        (func.lower(User.username) == func.lower(form_data.username))
+    ).first()
+
     if user and user.verify_password(form_data.password) :
         try:
             if user.is_locked:
@@ -274,11 +287,16 @@ async def inscription(request: Request):
 async def create_user(request: Request, db: Session = Depends(get_db),
                       new_username: str = Form(...), new_email: EmailStr = Form(...),
                       new_password: str = Form(...), confirm_password: str = Form(...)):
+
     if len(new_password) < 4:
         return render_error_template(request, "signup.html", "Le mot de passe doit contenir au moins 4 caractères.")
     if new_password != confirm_password:
         return render_error_template(request, "signup.html", "Les mots de passe ne correspondent pas.")
-    if db.query(User).filter((User.email == new_email) | (User.username == new_username)).first():
+    # Verifie si le username existe déjà dans la DB
+    if db.query(User).filter(
+            (func.lower(User.email) == func.lower(new_email)) |
+            (func.lower(User.username) == func.lower(new_username))
+    ).first():
         return render_error_template(request, "signup.html", "Email ou nom d'utilisateur déjà utilisé.")
 
     hashed_password = generate_password_hash(new_password)

@@ -16,7 +16,11 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/infos", response_class=HTMLResponse, name = "infos")
 async def infos(request: Request):
     username = request.state.username
-    return templates.TemplateResponse("infos.html", {"request": request, "username": username})
+    return templates.TemplateResponse("infos.html", {"request": request,
+                                                     "is_authenticated": request.state.is_authenticated,
+                                                     "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                     "username": request.state.username
+                                                     })
 
 @router.get("/unauthorized")
 async def protected_route():
@@ -26,10 +30,18 @@ async def protected_route():
 @router.get("/construction", response_class=HTMLResponse)
 async def read_play(request: Request):
     username = request.state.username
-    return templates.TemplateResponse("construction.html", {"request": request, "username": username})
+    return templates.TemplateResponse("construction.html", {"request": request,
+                                                            "is_authenticated": request.state.is_authenticated,
+                                                            "privileges": getattr(request.state, 'privileges','Utilisateur'),
+                                                            "username": request.state.username
+                                                            })
 
 # Erreur 502
 @router.get("/502", response_class=HTMLResponse)
 async def read_play(request: Request):
     username = request.state.username
-    return templates.TemplateResponse("502.html", {"request": request, "username": username})
+    return templates.TemplateResponse("502.html", {"request": request,
+                                                   "is_authenticated": request.state.is_authenticated,
+                                                   "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                   "username": request.state.username
+                                                   })

@@ -25,20 +25,10 @@ templates = Jinja2Templates(directory="app/templates")
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
     user_id = 0
-    user_name = ''
     user_isadmin = 0
 
-    token = request.cookies.get('access_token')
-
-    if token:
-        token = token[7:]
-
-        if verify_token(token):
-            user_id = get_user_id_from_token(token)
-            userFromToken = db.query(User).filter(User.id == user_id).first()
-            user_name = userFromToken.username
-            if (userFromToken.privileges == 'admin'):
-                user_isadmin = 1
+    if (getattr(request.state, 'privileges') == "admin"):
+        user_isadmin = 1
 
 
     per_page = 10
@@ -60,8 +50,10 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
         "total_pages": total_pages,
         "length": total_books,
         "user_id": user_id,
-        "username": user_name,
-        "user_isadmin": user_isadmin
+        "user_isadmin": user_isadmin,
+        "is_authenticated": request.state.is_authenticated,
+        "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+        "username": request.state.username
     }
 
     return templates.TemplateResponse("liste.html", url_context)
@@ -99,23 +91,32 @@ async def modifier_livre(request: Request,
 
 ############################################################################################################################################
 
-# Page permettant de modifier une énigme (à modifier par un pop-up)
+# Page permettant de modifier un livre (à modifier par un pop-up)
 @router.get("/modifier", response_class=HTMLResponse, name="modifier")
 async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
     # Query for the specific book by ID
     livre = db.query(Livre).filter(Livre.id == id).first()
+
+
 
     # If the book is found, render the modification page with the book's details
     if livre:
         max_id = db.query(func.max(Livre.id)).scalar() or 0
         return templates.TemplateResponse("modifier.html", {"request": request,
                                                             "livre": livre,
-                                                            "max_id": max_id })
-
+                                                            "max_id": max_id,
+                                                            "is_authenticated": request.state.is_authenticated,
+                                                            "privileges": getattr(request.state, 'privileges','Utilisateur'),
+                                                            "username": request.state.username
+                                                            })
     # If the book is not found, render a 404 page
-    return templates.TemplateResponse("404.html", {"request": request})
+    return templates.TemplateResponse("404.html", {"request": request,
+                                                   "is_authenticated": request.state.is_authenticated,
+                                                   "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                   "username": request.state.username
+                                                   })
 
-############################################################################################################################################
+                                      ############################################################################################################################################
 
 # Page permettant de supprimer un livre.
 @router.post("/supprimer", response_class=HTMLResponse, name="supprimer")
@@ -134,7 +135,11 @@ async def supprimer_livre(response: Response, id: int = Form(...), db: Session =
 @router.get("/ajouter", response_class=HTMLResponse, name="ajouter")
 async def ajouter_livre(request: Request):
 
-    return templates.TemplateResponse("ajouter.html",{"request": request})
+    return templates.TemplateResponse("ajouter.html",{"request": request,
+                                                      "is_authenticated": request.state.is_authenticated,
+                                                      "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+                                                      "username": request.state.username
+                                                      })
 
 
 @router.post("/ajouter", response_class=HTMLResponse, name="ajouter_post")
