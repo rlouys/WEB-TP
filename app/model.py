@@ -36,6 +36,8 @@ class User(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     username: Mapped[str] = Column(String(20), unique=True, nullable=False)
     email: Mapped[str] = Column(String(120), unique=True, nullable=False)
+    firstname: Mapped[str] = Column(String(128))
+    name: Mapped[str] = Column(String(128))
     password_hash: Mapped[str] = Column(String(128))
     privileges: Mapped[str] = Column(String(120))
     date_added: Mapped[datetime] = Column(DateTime, server_default=func.now())

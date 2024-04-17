@@ -25,6 +25,8 @@
                                 <th scope="col"><i class="fa-solid fa-lg fa-key pr-1"></i> ID</th>
                                 <th scope="col"><i class="fa-solid fa-lg fa-user pr-1"></i> Username</th>
                                 <th scope="col"><i class="fa-solid fa-lg fa-at pr-1"></i> Adresse e-mail</th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-at pr-1"></i> Prénom</th>
+                                <th scope="col"><i class="fa-solid fa-lg fa-at pr-1"></i> Nom</th>
                                 <th scope="col"><i class="fa-solid fa-lg fa-layer-group pr-1"></i> Privileges </th>
                                 <th scope="col"><i class="fa-solid fa-lg fa-calendar pr-1"></i> Date d'ajout </th>
                                 <th scope="col"><i class="fa-solid fa-lg fa-link pr-1"></i> Bloqué </th>
@@ -42,6 +44,8 @@
                                     <td><strong>{{user.id}}</strong></td>
                                     <td>{{user.username}}</td>
                                     <td>{{user.email}}</td>
+                                    <td>{{user.firstname}}</td>
+                                    <td>{{user.name}}</td>
                                     <td>{{user.privileges}}</td>
                                     <td>{{user.date_added}}</td>
                                     <td>{{user.is_locked}}</td>
@@ -113,8 +117,10 @@
 
 
                          <p>
+                            {% if privileges == "admin" %}
                             <a href='/empty_user_keep_admin' id="empty table" class="btn btn-outline-success">Empty Table</a>
                             <a href='/userlist' id="add-random-users" class="btn btn-outline-success">Add Random Users</a>
+                            {% endif %}
                             <a href='/ajouter_user' class="btn btn-outline-success">Ajouter un nouvel utilisateur</a>
                         </p>
 

@@ -111,16 +111,23 @@
                             <a href="/userlist" class="sidebar-link">Liste</a>
                         </li>
                         {% endif %}
+
+                        {% if is_authenticated %}
                         <li class="sidebar-item">
-                            {% if is_authenticated %}
+                            <a href="/profil" class="sidebar-link">Profil</a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="/deconnexion" class="sidebar-link">Déconnexion</a>
-                            {% else %}
+                        </li>
+                        {% else %}
+                        <li class="sidebar-item">
                             <a href="/connexion" class="sidebar-link">Connexion</a>
-                            {% endif %}
                         </li>
                         <li class="sidebar-item">
                             <a href="/inscription" class="sidebar-link">Inscription</a>
                         </li>
+                        {% endif %}
+
 
                     </ul>
                 </li>
@@ -234,37 +241,31 @@
                                aria-controls="auth"
                                onmouseover="this.style.color='black'"
                                onmouseout="this.style.color='white'">
-                            {{ username | default('Utilisateur') }}
+                                {{ username | default('Utilisateur') }}
                             </a>
 
                             <ul id="auth" class="dropdown-menu dropdown-menu-dark">
-                                {% if is_authenticated %}
-
-                                <li class="nav-item active">
-                                    <a href="/deconnexion" class="dropdown-item">Déconnexion</a>
-                                </li>
-
                                 {% if privileges == "admin" %}
-
                                 <li class="nav-item active">
                                     <a href="/userlist" class="dropdown-item">Liste</a>
                                 </li>
+                                {% if is_authenticated %}
+                                <li class="nav-item active">
+                                    <a href="/profil" class="dropdown-item">Profil</a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a href="/deconnexion" class="dropdown-item">Déconnexion</a>
+                                </li>
                                 {% endif %}
-
                                 {% else %}
                                 <li class="nav-item active">
                                     <a href="/connexion" class="dropdown-item">Connexion</a>
                                 </li>
 
-
-                                {% endif %}
                                 <li class="nav-item active">
                                     <a href="/inscription" class="dropdown-item">Inscription</a>
                                 </li>
-
-
-
-
+                                {% endif %}
                             </ul>
 
                         </li>

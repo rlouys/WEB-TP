@@ -10,7 +10,6 @@ from app.login_manager import create_access_token, get_current_user, oauth2_sche
 from app.model import *
 from app.data.dependencies import get_db
 
-
 from typing import Optional
 from app.schemas import UserSchema
 import logging
@@ -31,7 +30,6 @@ templates = Jinja2Templates(directory="app/templates")
 # PAGE BIBLIOTHEQUE - GET
 @router.get("/userlist", response_class=HTMLResponse)
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
-
     user_id = 0
 
     per_page = 10
@@ -56,27 +54,26 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
         "username": request.state.username
     }
 
-
-
     return templates.TemplateResponse("users.html", url_context)
+
 
 ############################################################################################################################################
 
 # PAGE MODIFIER USER - POST
 @router.post("/userlist", response_class=HTMLResponse)
 async def modifier_user(request: Request,
-                         db: Session = Depends(get_db),
-                         id: Optional[int] = Form(None),
-                         username: str = Form(...),
-                         email: str = Form(...),
-                         privileges: str = Form(...),
-                         password: Optional[str] = Form(None),
-                         confirm_password: Optional[str] = Form(None),
-                         is_locked: bool = Form(...)
-                         ):
-
+                        db: Session = Depends(get_db),
+                        id: Optional[int] = Form(None),
+                        username: str = Form(...),
+                        email: str = Form(...),
+                        privileges: str = Form(...),
+                        password: Optional[str] = Form(None),
+                        confirm_password: Optional[str] = Form(None),
+                        is_locked: bool = Form(...)
+                        ):
     if len(password) < 4:
-        return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.")
+        return render_error_template(request, "ajouter_user.html",
+                                     "Le mot de passe doit contenir au moins 4 caractères.")
     if password != confirm_password:
         return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
     # Verifie si le username existe déjà dans la DB
@@ -85,7 +82,6 @@ async def modifier_user(request: Request,
             (func.lower(User.username) == func.lower(username))
     ).first():
         return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
-
 
     user = db.query(User).filter(User.id == id).first()
     if not user:
@@ -103,7 +99,7 @@ async def modifier_user(request: Request,
         db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
 
     else:
-    # Update the user details
+        # Update the user details
         user.username = username
         user.email = email
         user.privileges = privileges
@@ -112,7 +108,8 @@ async def modifier_user(request: Request,
         if password and confirm_password and password == confirm_password:
             user.password_hash = generate_password_hash(password)
         elif password or confirm_password:
-            raise HTTPException(status_code=400, detail="Both password and confirm password must be provided and match.")
+            raise HTTPException(status_code=400,
+                                detail="Both password and confirm password must be provided and match.")
 
         db.commit()
 
@@ -128,17 +125,17 @@ async def modifier_user(request: Request,
 # PERMET A UN ADMIN D AJOUTER UN UTILISATEUR (RECURSE SUR USERLIST)
 @router.post("/ajouter_user", response_class=HTMLResponse)
 async def ajouter_user(request: Request,
-                         db: Session = Depends(get_db),
-                         username: str = Form(...),
-                         email: str = Form(...),
-                         privileges: str = Form(...),
-                         password: Optional[str] = Form(None),
-                         confirm_password: Optional[str] = Form(None),
-                         is_locked: bool = Form(...)
-                         ):
-
+                       db: Session = Depends(get_db),
+                       username: str = Form(...),
+                       email: str = Form(...),
+                       privileges: str = Form(...),
+                       password: Optional[str] = Form(None),
+                       confirm_password: Optional[str] = Form(None),
+                       is_locked: bool = Form(...)
+                       ):
     if len(password) < 4:
-        return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.")
+        return render_error_template(request, "ajouter_user.html",
+                                     "Le mot de passe doit contenir au moins 4 caractères.")
     if password != confirm_password:
         return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
     # Verifie si le username existe déjà dans la DB
@@ -150,12 +147,12 @@ async def ajouter_user(request: Request,
 
     # Create new User instance
     new_user = User(
-                    username=username,
-                    email=email,
-                    privileges=privileges,
-                    password_hash = generate_password_hash(password),
-                    is_locked = is_locked
-                   )
+        username=username,
+        email=email,
+        privileges=privileges,
+        password_hash=generate_password_hash(password),
+        is_locked=is_locked
+    )
 
     # Add to the data
     db.add(new_user)
@@ -163,6 +160,7 @@ async def ajouter_user(request: Request,
     db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
 
     return RedirectResponse(url="/ajouter_user", status_code=303)
+
 
 ############################################################################################################################################
 
@@ -176,13 +174,14 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
     if user:
         max_id = db.query(func.max(User.id)).scalar() or 0
         return templates.TemplateResponse("modifier_user.html", {"request": request,
-                                                            "user": user,
-                                                            "max_id": max_id,
-                                                             "is_authenticated": request.state.is_authenticated,
-                                                             "privileges": getattr(request.state, 'privileges','Utilisateur'),
-                                                             "username": request.state.username
+                                                                 "user": user,
+                                                                 "max_id": max_id,
+                                                                 "is_authenticated": request.state.is_authenticated,
+                                                                 "privileges": getattr(request.state, 'privileges',
+                                                                                       'Utilisateur'),
+                                                                 "username": request.state.username
 
-                                                             })
+                                                                 })
 
     # If the book is not found, render a 404 page
     return templates.TemplateResponse("404.html", {"request": request,
@@ -196,17 +195,17 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 
 @router.get("/ajouter_user", response_class=HTMLResponse, name="ajouter_user")
 async def ajouter_livre(request: Request):
-
-    return templates.TemplateResponse("ajouter_user.html",{"request": request,
-                                                           "is_authenticated": request.state.is_authenticated,
-                                                           "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
-                                                           "username": request.state.username
-                                                           })
+    return templates.TemplateResponse("ajouter_user.html", {"request": request,
+                                                            "is_authenticated": request.state.is_authenticated,
+                                                            "privileges": getattr(request.state, 'privileges',
+                                                                                  'Utilisateur'),
+                                                            "username": request.state.username
+                                                            })
 
 
 ############################################################################################################################################
 
-# Page permettant de supprimer un livre.
+# Page permettant de supprimer un user.
 @router.post("/supprimer_user", response_class=HTMLResponse, name="supprimer_user")
 async def supprimer_user(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
     # Query for the specific book by ID and delete it
@@ -234,7 +233,7 @@ async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestFor
         (func.lower(User.username) == func.lower(form_data.username))
     ).first()
 
-    if user and user.verify_password(form_data.password) :
+    if user and user.verify_password(form_data.password):
         try:
             if user.is_locked:
                 return templates.TemplateResponse("connexion.html", {
@@ -286,7 +285,8 @@ async def inscription(request: Request):
 @router.post("/inscription")
 async def create_user(request: Request, db: Session = Depends(get_db),
                       new_username: str = Form(...), new_email: EmailStr = Form(...),
-                      new_password: str = Form(...), confirm_password: str = Form(...)):
+                      new_password: str = Form(...), confirm_password: str = Form(...),
+                      new_firstname: str = Form(...), new_name: str = Form(...)):
 
     if len(new_password) < 4:
         return render_error_template(request, "signup.html", "Le mot de passe doit contenir au moins 4 caractères.")
@@ -301,12 +301,12 @@ async def create_user(request: Request, db: Session = Depends(get_db),
 
     hashed_password = generate_password_hash(new_password)
     new_user = User(username=new_username, email=new_email, password_hash=hashed_password, privileges="user",
-                    is_locked=0)
+                    is_locked=0, prenom=new_firstname, nom=new_name)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     logger.info(
-        f"Received data - Username: {new_username}, Email: {new_email}, Password: {new_password}, Confirm: {confirm_password}")
+        f"Received data - Username: {new_username}, Email: {new_email},Prenom: {new_firstname}, Nom: {new_name} Password: {new_password}, Confirm: {confirm_password}")
     return templates.TemplateResponse("signup_success.html", {"request": request})
 
 
@@ -320,21 +320,24 @@ async def read_protected(user: UserSchema = Depends(get_current_user)):
 # Page de profil de l'utilisateur
 @router.get("/profil", response_class=HTMLResponse, name="profil")
 async def profil(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-
     if not user:
         return templates.TemplateResponse("404.html", {"request": request, "error": "Profil non trouvé"})
 
-        # Aucun besoin de vérifier le token ou d'extraire l'ID de l'utilisateur, tout est géré par `get_current_user`
+        # Aucun besoin de vérifier le token ou d'extraire l'ID de l'utilisateur, tout est géré par get_current_user
     return templates.TemplateResponse("profil.html", {
-            "request": request,
-            "username": user.username,
-            "user": user
-        })
+        "request": request,
+        "user": user,
+        "is_authenticated": request.state.is_authenticated,
+        "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+        "username": request.state.username
+    })
 
 
 @router.post("/update-profile")
 async def update_profile(request: Request, db: Session = Depends(get_db),
                          username: Optional[str] = Form(None), email: Optional[str] = Form(None),
+                         name: Optional[str] = Form(None),
+                         firstname: Optional[str] = Form(None),
                          currentPassword: Optional[str] = Form(None), newPassword: Optional[str] = Form(None),
                          confirmPassword: Optional[str] = Form(None)):
     token = request.cookies.get('access_token', "").split(" ")[1]
@@ -386,6 +389,12 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
     if username and username != user.username:
         user.username = username
         updated = True
+    if firstname and firstname != user.firstname:
+        user.firstname = firstname
+        updated = True
+    if name and name != user.name:
+        user.name = name
+        updated = True
     if email and email != user.email:
         user.email = email
         updated = True
@@ -409,6 +418,7 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
         return response
 
     return RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
+
 
 @router.get("/api/check-username")
 async def check_username(username: str, db: Session = Depends(get_db)):
@@ -453,5 +463,3 @@ async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depen
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-
-

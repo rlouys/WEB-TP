@@ -121,8 +121,10 @@
 
 
                          <p>
+                            {% if privileges == "admin" %}
                             <a href='/empty_livres' id="empty table" class="btn btn-outline-success">Empty Table</a>
                             <a href='/liste' id="add-random-books" class="btn btn-outline-success">Add Random Books</a>
+                             {% endif %}
                             <a href='#' class="btn btn-outline-success">Voir mes livres</a>
                             <a href='/ajouter' class="btn btn-outline-success">Ajouter un nouveau livre</a>
                         </p>

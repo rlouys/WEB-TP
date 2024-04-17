@@ -11,6 +11,8 @@ class UserSchema(BaseModel):
 class UserSignUp(BaseModel):
     new_username: str
     new_email: EmailStr
+    new_name: str
+    new_firstname: str
     new_password: str
     confirm_password: str
     privileges: str

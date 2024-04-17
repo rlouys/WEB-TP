@@ -99,20 +99,28 @@
         </div>
 
         <br>
-
-
-        <!-- USER TEL -->
+        <!-- USER NAME -->
+        <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" class="form-control" name="firstname" value="{{ user.firstname }}" />
+        </div>
+        <br>
+        <!-- USER FIRSTNAME -->
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" class="form-control" name="name" value="{{ user.name }}" />
+        </div>
+        <br>
+        <!-- USER DATE -->
         <div class="form-group">
             <label>Date d'inscription</label>
-            <input type="text" class="form-control" name="telephone" value="{{ user.date_added }}" readonly/>
+            <input type="text" class="form-control" name="date_added" value="{{ user.date_added }}" readonly/>
         </div>
-
-        <br>
-
         <!-- Modifier mot de passe button -->
         <!-- <button type="button" id="changePasswordButton" class="btn btn-primary"> -->
         <!-- Modifier mot de passe -->
         <!-- </button> -->
+        <br>
         <div class="accordion" id="accordion_pwd">
             <div class="accordion-item">
                 <h2 class="accordion-header">
