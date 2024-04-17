@@ -73,9 +73,9 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 
 ############################################################################################################################################
 
-# PAGE MODIFIER LIVRE - POST
+# PAGE MODIFIER USER - POST
 @router.post("/userlist", response_class=HTMLResponse)
-async def modifier_livre(request: Request,
+async def modifier_user(request: Request,
                          db: Session = Depends(get_db),
                          id: int = Form(...),
                          username: str = Form(...),
@@ -108,6 +108,66 @@ async def modifier_livre(request: Request,
     response = RedirectResponse(url="/userlist", status_code=303)
     return response
 
+
+############################################################################################################################################
+# PERMET A UN ADMIN D AJOUTER UN UTILISATEUR (RECURSE SUR USERLIST)
+@router.post("/userlistadd", response_class=HTMLResponse)
+async def ajouter_user(request: Request,
+                         db: Session = Depends(get_db),
+                         username: str = Form(...),
+                         email: str = Form(...),
+                         privileges: str = Form(...),
+                         password: Optional[str] = Form(None),
+                         confirm_password: Optional[str] = Form(None),
+                         is_locked: bool = Form(...)
+                         ):
+
+    # Create new User instance
+    new_user = User(
+                    username=username,
+                    email=email,
+                    privileges=privileges,
+                    password_hash = generate_password_hash(password),
+                    is_locked = is_locked
+                   )
+
+    # Add to the data
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
+
+    return RedirectResponse(url="/userlist", status_code=303)
+
+############################################################################################################################################
+
+# PERMET A UN ADMIN D AJOUTER UN UTILISATEUR (RECURSE SUR USERLIST)
+@router.post("/ajouter_user", response_class=HTMLResponse)
+async def ajouter_user(request: Request,
+                         db: Session = Depends(get_db),
+                         username: str = Form(...),
+                         email: str = Form(...),
+                         privileges: str = Form(...),
+                         password: Optional[str] = Form(None),
+                         confirm_password: Optional[str] = Form(None),
+                         is_locked: bool = Form(...)
+                         ):
+
+    # Create new User instance
+    new_user = User(
+                    username=username,
+                    email=email,
+                    privileges=privileges,
+                    password_hash = generate_password_hash(password),
+                    is_locked = is_locked
+                   )
+
+    # Add to the data
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)  # Refresh to get the ID if needed elsewhere
+
+    return RedirectResponse(url="/ajouter_user", status_code=303)
+
 ############################################################################################################################################
 
 # Page permettant de modifier une énigme (à modifier par un pop-up)
@@ -129,6 +189,14 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 
 ############################################################################################################################################
 
+@router.get("/ajouter_user", response_class=HTMLResponse, name="ajouter_user")
+async def ajouter_livre(request: Request):
+
+    return templates.TemplateResponse("ajouter_user.html",{"request": request})
+
+
+############################################################################################################################################
+
 # Page permettant de supprimer un livre.
 @router.post("/supprimer_user", response_class=HTMLResponse, name="supprimer_user")
 async def supprimer_user(response: Response, id: int = Form(...), db: Session = Depends(get_db)):
@@ -139,6 +207,7 @@ async def supprimer_user(response: Response, id: int = Form(...), db: Session = 
         db.commit()
 
     return RedirectResponse(url="/userlist", status_code=303)
+
 
 ############################################################################################################################################
 

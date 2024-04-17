@@ -272,6 +272,9 @@ a.sidebar-link {
     font-size: 1.25rem;
 }
 
+.nav-auth{
+    color:black!important;
+}
 .navbar a{
     color:white;
 }
@@ -571,19 +574,43 @@ body.darkmode .form-floating{
 }
 
 .user-radio .user-radio:checked + label{
-    box-shadow: 0px 0px 10px green; /* X-offset, Y-offset, Blur radius, Color */
+    box-shadow: 0px 0px 5px green; /* X-offset, Y-offset, Blur radius, Color */
     color: black;
     background-color: #efffee;
 }
 
 #option2:checked + label,
 #option3:checked + label {
-    box-shadow: 0px 0px 10px green; /* X-offset, Y-offset, Blur radius, Color */
+    box-shadow: 0px 0px 5px green; /* X-offset, Y-offset, Blur radius, Color */
     color: green;  /* Change text color to green when checked */
     font-weight: bold; /* Make the text bold */
 }
 
 #option2:checked + label:hover,
 #option3:checked + label:hover {
-    box-shadow: 0px 0px 10px green!important; /* Keep the same shadow on hover */
+    box-shadow: 0px 0px 5px green!important; /* Keep the same shadow on hover */
 }
+
+
+/* Ensure the parent is positioned relative so that the absolute positioning of the dropdown-menu is relative to the nav-item */
+.nav-item.dropdown {
+    position: relative;
+}
+
+/* Style for the dropdown menu to make it smooth and non-static */
+.nav-item.dropdown .dropdown-menu {
+    display: block;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear;
+    position: absolute;
+    top: 100%; /* Position it directly below the nav-item */
+    left: -5%; /* Start at 50% of the parent item */
+    transform: translate3d(-20%, 0, 0); /* Center it and move it down slightly */
+    z-index: 0;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    visibility: visible;
+    transform: translate3d(-15%, -2%, 0);
+}
+

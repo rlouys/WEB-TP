@@ -93,19 +93,19 @@
 
                                     {% for num in range(start_page, end_page + 1) %}
                                         <li class="page-item {% if num == page %}active{% endif %}">
-                                            <a style="z-index: 2;" class="page-link" href="/liste?page={{ num }}">{{ num }}</a>
+                                            <a style="z-index: 2;" class="page-link" href="/userlist?page={{ num }}">{{ num }}</a>
                                         </li>
                                     {% endfor %}
 
                                     {% if end_page < total_pages %}
                                         <li class="page-item disabled"><a class="page-link">...</a></li>
                                         <li class="page-item">
-                                            <a style="z-index: 2;" class="page-link" href="/liste?page={{ total_pages }}">{{ total_pages }}</a>
+                                            <a style="z-index: 2;" class="page-link" href="/userlist?page={{ total_pages }}">{{ total_pages }}</a>
                                         </li>
                                     {% endif %}
 
                                     {% if page < total_pages %}
-                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/liste?page={{ page + 1 }}">Next</a></li>
+                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/userlist?page={{ page + 1 }}">Next</a></li>
                                     {% endif %}
                                 </ul>
                             </nav>
@@ -113,10 +113,9 @@
 
 
                          <p>
-                            <a href='/empty_livres' id="empty table" class="btn btn-outline-success">Empty Table</a>
-                            <a href='/liste' id="add-random-books" class="btn btn-outline-success">Add Random Books</a>
-                            <a href='#' class="btn btn-outline-success">Voir mes livres</a>
-                            <a href='/ajouter' class="btn btn-outline-success">Ajouter un nouveau livre</a>
+                            <a href='/empty_user_keep_admin' id="empty table" class="btn btn-outline-success">Empty Table</a>
+                            <a href='/userlist' id="add-random-users" class="btn btn-outline-success">Add Random Users</a>
+                            <a href='/ajouter_user' class="btn btn-outline-success">Ajouter un nouvel utilisateur</a>
                         </p>
 
                         </div>

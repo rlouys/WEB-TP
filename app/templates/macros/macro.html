@@ -20,14 +20,12 @@
 
 <!-- MACRO POUR GÉNERER DES SUBMIT BUTTON -->
 {% macro generateFormSubmit(class, placeholder ,retour, link) %}
-    <div class="form-group">
         <!-- Bouton retour ? -->
         {% if retour %}
         <a href="{{ link }}" class="btn btn-outline-secondary">Retour</a>
         {% endif %}
 
         <button type="submit" class="{{ class }}"> {{ placeholder }} </button>
-    </div>
 
 {% endmacro %}
 

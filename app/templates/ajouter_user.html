@@ -1,0 +1,84 @@
+{% extends "main.html" %}
+{% block body %}
+
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center">
+
+
+        <!-- Main Content -->
+        <div class=" col-md-8">
+            <div style="position: relative!important; max-width:60vh; width: 100%; margin: auto;" class="listePage">
+
+                <h1>Utilisateur</h1>
+
+                <br><br><br>
+
+                <!-- FORM POUR MODIFIER LES INFOS D'UN user -->
+                <form id="ajouter_user" action="" method="POST">
+
+                    <!-- USER USERNAME -->
+                    {{ macro.generateNewFormField("username", '', '', true, "text", '', "Username") }}
+                    <br>
+
+                    <!-- USER EMAIL ADDRESS -->
+                    {{ macro.generateNewFormField("email", '', '', true, "text", '', "Adresse e-mail") }}
+                    <br>
+
+                    <!-- USER PRIVILEGES -->
+                    <div class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+                        <select name="privileges" class="selectmdb select form-control form-controls" id="privileges" style="border: 1px solid #BEBEBE; color:darkgreen;">
+                          <option selected disabled>Droits</option>
+                          <option value="admin">Administrateur</option>
+                          <option value="user">User</option>
+                        </select>
+                    </div>
+
+                    <br>
+
+                    <!-- USER PASSWORD -->
+                    {{ macro.generateNewFormField("password", '', '', true, "password", '', "Mot de passe") }}
+                    <br>
+
+                    <!-- CONFIRM PASSWORD -->
+                    {{ macro.generateNewFormField("confirm_password", '', '', true, "password", '', "Confirmer le mot de passe") }}
+
+                    <div class="btn-group user-radio" style="margin-bottom: 2rem;">
+                      <!-- Radio button for "Locked" -->
+                      <input type="radio" class="btn-check" name="is_locked" id="option1" value="true" autocomplete="off" disabled/>
+                      <label class="btn btn-success" for="option1" data-mdb-ripple-init>Bloqué</label>
+
+                      <!-- Radio button for "lock" -->
+
+
+                      <input type="radio" class="btn-check" name="is_locked" id="option2" value="true" autocomplete="off" />
+                      <label class="btn" for="option2" data-mdb-ripple-init>Oui</label>
+                      <input type="radio" class="btn-check" name="is_locked" id="option3" value="false" autocomplete="off" checked/>
+                      <label class="btn" for="option3" data-mdb-ripple-init>Non</label>
+
+
+                      <!-- Default Radio button for "Unlocked" checked by default -->
+                    </div>
+
+                    <br>
+
+                    <div class="form-group">
+                        <a href="/userlist" class="btn btn-outline-secondary">Retour</a>
+                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/userlistadd')">Ajouter</button>
+                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/ajouter_user')">Continuer</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitForm(action) {
+        document.getElementById('ajouter_user').action = action;
+        document.getElementById('ajouter_user').submit();
+    }
+</script>
+
+{% endblock %}
+

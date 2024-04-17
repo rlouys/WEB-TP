@@ -30,7 +30,9 @@
         {{ macro.generateFormField("confirm_password", '', "Confirmer le mot de passe", "password", "password") }}
         <br>
         <!-- SUBMIT BUTTON -->
-        {{ macro.generateFormSubmit("btn btn-outline-success", "S'inscrire", false) }}
+        <div class="form-group">
+            {{ macro.generateFormSubmit("btn btn-outline-success", "S'inscrire", false) }}
+        </div>
     </form>
 
 </div>

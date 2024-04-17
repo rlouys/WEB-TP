@@ -220,8 +220,45 @@
 
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="/connexion">Connexion</a>
+                        <li class="nav-item dropdown">
+                            <a style="color:white;"
+                               href="#"
+                               class="nav-link dropdown-toggle"
+                               data-bs-toggle="collapse"
+                               data-bs-target="#auth"
+                               aria-expanded="false"
+                               aria-controls="auth"
+                               onmouseover="this.style.color='black'"
+                               onmouseout="this.style.color='white'">
+                            {{ username | default('Utilisateur') }}
+                            </a>
+
+                            <ul id="auth" class="dropdown-menu dropdown-menu-dark">
+                                {% if is_authenticated %}
+
+                                <li class="nav-item active">
+                                    <a href="/deconnexion" class="dropdown-item">Déconnexion</a>
+                                </li>
+
+                                {% if privileges == "admin" %}
+
+                                <li class="nav-item active">
+                                    <a href="/userlist" class="dropdown-item">Liste</a>
+                                </li>
+                                {% endif %}
+
+                                {% else %}
+                                <li class="nav-item active">
+                                    <a href="/connexion" class="dropdown-item">Connexion</a>
+                                </li>
+
+                                {% endif %}
+
+
+
+
+                            </ul>
+
                         </li>
 
                     </ul>

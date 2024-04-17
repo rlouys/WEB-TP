@@ -27,7 +27,9 @@
         <!-- BUTTONS CONTAINER -->
         <div class="d-flex justify-content-between">
             <!-- SUBMIT BUTTON -->
-            {{ macro.generateFormSubmit("btn btn-outline-success", "Se connecter", false) }}
+            <div class="form-group">
+                {{ macro.generateFormSubmit("btn btn-outline-success", "Se connecter", false) }}
+            </div>
             <!-- S'INSCRIRE LINK BUTTON -->
             <a href="/inscription" class="btn btn-outline-primary align-self-end">S'inscrire</a>
         </div>

@@ -86,6 +86,42 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+/*******************************************************************
+   CREATE RANDOM USERS
+ *******************************************************************/
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const addButton = document.getElementById("add-random-users");
+    addButton.addEventListener("click", async function(event) {
+        event.preventDefault(); // Prevent the default action of the <a> tag
+        console.log("Button clicked");
+
+        try {
+            const response = await fetch("/generate_random_user");
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Users fetched successfully", data);
+
+                // Update the DOM with the new books
+
+                // Redirect to /liste or refresh the page to show updated books
+                console.log("Redirecting to /userlist to show updated books.");
+                window.location.href = '/userlist'; // Redirect to the list page
+            } else if (response.status === 401) {
+                // Handle the authentication error
+                launchAlert();
+            } else {
+                throw new Error("Failed to fetch data from the server");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+});
+
+
+
 
 /*******************************************************************
    SUPPRIMER UN LIVRE ( Affiche un message d'alerte SweetAlerts )
@@ -362,4 +398,3 @@ document.addEventListener('DOMContentLoaded', function() {
     // Appelez la fonction checkFormValidity au chargement de la page pour définir l'état initial du bouton
     checkFormValidity();
 });
-
