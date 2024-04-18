@@ -67,7 +67,7 @@ async def modifier_user(request: Request,
                         username: str = Form(...),
                         name: str = Form(...),
                         firstname: str = Form(...),
-                        email: str = Form(...),
+                        email: EmailStr = Form(...),
                         privileges: str = Form(...),
                         password: Optional[str] = Form(None),
                         confirm_password: Optional[str] = Form(None),
@@ -140,7 +140,7 @@ async def modifier_user(request: Request,
 async def ajouter_user(request: Request,
                        db: Session = Depends(get_db),
                        username: str = Form(...),
-                       email: str = Form(...),
+                       email: EmailStr = Form(...),
                        name: str = Form(...),
                        firstname: str = Form(...),
                        privileges: str = Form(...),
@@ -211,7 +211,7 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 ############################################################################################################################################
 
 @router.get("/ajouter_user", response_class=HTMLResponse, name="ajouter_user")
-async def ajouter_livre(request: Request):
+async def ajouter_user(request: Request):
     return templates.TemplateResponse("ajouter_user.html", {"request": request,
                                                             "is_authenticated": request.state.is_authenticated,
                                                             "privileges": getattr(request.state, 'privileges',

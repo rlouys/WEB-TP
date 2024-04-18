@@ -85,7 +85,7 @@
         <!-- USER EMAIL -->
         <div class="form-group">
             <label>E-mail</label>
-            <input type="text" class="form-control" name="email" id="email" value="{{ user.email }}"/>
+            <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}"/>
             <div class="invalid-feedback" id="emailError" style="display: {{ 'block' if error_email else 'none' }};">
                 {{ error_email or '' }}
             </div>
