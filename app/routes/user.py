@@ -211,7 +211,7 @@ async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
 ############################################################################################################################################
 
 @router.get("/ajouter_user", response_class=HTMLResponse, name="ajouter_user")
-async def ajouter_user(request: Request):
+async def ajouter_livre(request: Request):
     return templates.TemplateResponse("ajouter_user.html", {"request": request,
                                                             "is_authenticated": request.state.is_authenticated,
                                                             "privileges": getattr(request.state, 'privileges',
