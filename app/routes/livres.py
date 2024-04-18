@@ -159,7 +159,14 @@ async def ajouter_livre(request: Request, db: Session = Depends(get_db), price: 
         raise HTTPException(status_code=400, detail="Invalid price format")
 
     # Create new Livre instance
-    new_livre = Livre(nom=nom, auteur=auteur, editeur=editeur, price = formatted_price, created_by = user_id_from_cookies, modified_by = user_id_from_cookies, owner_id = user_id_from_cookies)
+    new_livre = Livre(nom=nom,
+                      auteur=auteur,
+                      editeur=editeur,
+                      stock=1,
+                      price = formatted_price,
+                      created_by = user_id_from_cookies,
+                      modified_by = user_id_from_cookies,
+                      owner_id = user_id_from_cookies)
 
     # Add to the data
     db.add(new_livre)

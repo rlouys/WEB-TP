@@ -42,15 +42,11 @@ async def read_root(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_data = extract_user_data_from_token(token) if token else None
 
-    username = user_data['sub'] if user_data else "Utilisateur"
-    is_authenticated = user_data is not None
-    privileges = user_data['privileges'] if user_data else None
-
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "username": username,
-        "is_authenticated": is_authenticated,
-        "privileges": privileges
+        "is_authenticated": request.state.is_authenticated,
+        "privileges": getattr(request.state, 'privileges', 'Utilisateur'),
+        "username": request.state.username
     })
 
 

@@ -33,7 +33,7 @@
 
 
                     <input type="hidden" value="{{ user['id'] }}" name="id"/>
-
+                    <input type="hidden" value="modify" name="modify"/>
                     <!-- USER USERNAME -->
                     {{ macro.generateNewFormField("username", user.username, user.username, true, "text", '', "Username") }}
                     <br>
@@ -42,13 +42,26 @@
                     {{ macro.generateNewFormField("email", user.email, user.email, true, "text", '', "email") }}
                     <br>
 
-                    <!-- USER PRIVILEGES -->
-                    {{ macro.generateNewFormField("privileges", user.privileges, user.privileges, true, "text", '', "privileges") }}
+                    {{ macro.generateNewFormField("name", user.name, user.name, true, "name", '', "Name") }}
                     <br>
 
+                    {{ macro.generateNewFormField("firstname", user.firstname, user.firstname, true, "firstname", '', "Firstname") }}
+                    <br>
+
+                    <!-- USER PRIVILEGES -->
+                    <div class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+                        <select name="privileges" class="selectmdb select form-control form-controls" id="privileges" style="border: 1px solid #BEBEBE; color:darkgreen;">
+                            <option value="admin" {% if user.privileges == "admin" %}selected{% endif %}>Administrateur</option>
+                            <option value="user" {% if user.privileges != "admin" %}selected{% endif %}>Client</option>
+                        </select>
+                    </div>
+
+                    <br>
                     <!-- USER PASSWORD -->
                     {{ macro.generateNewFormField("password", '', user.password_hash, true, "password", '', "New Password") }}
                     <br>
+
+
 
                     <!-- CONFIRM PASSWORD -->
                     {{ macro.generateNewFormField("confirm_password", '', '', true, "password", '', "Confirm Password") }}

@@ -22,13 +22,13 @@
                     <table class="table table-responsive-sm table-light table-hover" >
                         <thead>
                             <tr class="table-success">
-                                <th scope="col"><i class="fa-solid fa-book"></i> Titre</th>
+                                <th scope="col" style="text-align: right; "><i class="fa-solid fa-book"></i> TITRE </th>
                                 <th scope="col"><i class="fa-solid fa-user"></i> Auteur</th>
                                 <th scope="col"><i class="fa-solid fa-building"></i> Editeur</th>
                                 <th scope="col"><i class="fa-solid fa-tags"></i> Prix </th>
                                 <th scope="col"><i class="fa-solid fa-tags"></i> Stock </th>
-                                <th scope="col"><i class="fa-solid fa-key"></i> OwnerID </th>
-                                <th scope="col"><i class="fa-solid fa-key"></i> TokenID </th>
+                                <th scope="col"><i class="fa-solid fa-key"></i> Owner </th>
+                                <th scope="col"><i class="fa-solid fa-key"></i> Nom complet </th>
 
                                 <!-- on gérera ici le fait d'afficher le propriétaire ou pas -->
                                 {% if 1 %}
@@ -41,13 +41,13 @@
                             {% for livre in livres %}
                                 {% if livre.stock > 0 or user_isadmin%}
                                 <tr>
-                                    <td>{{livre.nom}}</td>
+                                    <td style="text-align: right; border-right: 1px solid grey;">{{livre.nom}}</td>
                                     <td>{{livre.auteur}}</td>
                                     <td>{{livre.editeur}}</td>
                                     <td>{{livre.price}} €</td>
                                     <td>{{livre.stock}}</td>
                                     <td>{{livre.owner.username}}</td>
-                                    <td>{{user_name}}</td>
+                                    <td>{{livre.owner.name|upper}} {{livre.owner.firstname}}</td>
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">
@@ -120,25 +120,25 @@
 
 
 
-                         <p>
-                            {% if privileges == "admin" %}
-                            <a href='/empty_livres' id="empty table" class="btn btn-outline-success">Empty Table</a>
-                            <a href='/liste' id="add-random-books" class="btn btn-outline-success">Add Random Books</a>
-                             {% endif %}
-                            <a href='#' class="btn btn-outline-success">Voir mes livres</a>
-                            <a href='/ajouter' class="btn btn-outline-success">Ajouter un nouveau livre</a>
-                        </p>
+                            <div>
+                                {% if privileges == "admin" %}
 
+                                <a href='/empty_livres' id="empty table" class="btn btn-outline-success">Empty Table</a>
+
+                                <div class="btn-group">
+                                    <a href="javascript:void(0)" class="btn btn-success active disabled"  data-mdb-ripple-init>Add Random Books</a>
+                                    <a href="javascript:void(0)" id="add-random-books-10" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>10</a>
+                                    <a href="javascript:void(0)" id="add-random-books-100" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>100</a>
+                                </div>
+                                {% endif %}
+                                <a href='/ajouter' class="btn btn-outline-success">Ajouter un nouveau livre</a>
+                            </div>
                         </div>
-
-
-
-
-
 
         </div>
     </div>
 </div>
+ <br><br><br><br>
 
 
 

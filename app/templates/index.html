@@ -8,64 +8,87 @@
 
             <h1>Bienvenue sur H-Library !</h1>
             <br/><br/>
-            <h4>Ici, vous pouvez consulter et gérer votre liste de livres facilement</h4>
-            <br/>
             <h5>Par quoi commencer ? </h5>
             <br>
 
-
-            <!-- BOUTON BIBLIOTHEQUE -->
-            <div>
-                <a href="/liste">
-                    <button type="button" class="btn btn-success btn-lg w-75">
-                        <img src="../static/src/books2.png" alt="books"
-                             style="width:2em;height:2em; margin-right:0.5em;">Acceder a la bibliotheque
+            <div class="list-group list-group-light mb-2">
+                <a href="/infos">
+                    <button type="button"
+                            class="list-group-item list-group-item-action px-3 border-0 list-group-item-warning"
+                            aria-current="true"
+                            style="color:black;">
+                    Lire les informations
                     </button>
                 </a>
             </div>
-
-            <br/>
-
-            <!-- BOUTON AJOUTER UN LIVRE -->
-            <div>
-                <a href="/ajouter">
-                    <button type="button" class="btn btn-success btn-lg" style="width:75%;">
-                        <i class="fa-solid fa-book-open" style="margin-right: 0.5em;"></i>Ajouter un livre
-                    </button>
-                </a>
-            </div>
-
-            <br/>
-            {% if is_authenticated %}
-            <!-- BOUTON PROFIL -->
-            <div>
-                <a href="/profil">
-                    <button type="button" class="btn btn-primary btn-lg" style="width:75%;">
-                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Profil
-                    </button>
-                </a>
-            </div>
-            <br/>
-
-            <!-- BOUTON DECONNEXION -->
-            <div>
-                <a href="/deconnexion">
-                    <button type="button" class="btn btn-danger btn-lg" style="width:75%;">
-                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Se déconnecter
-                    </button>
-                </a>
-            </div>
-            {% else %}
-            <!-- BOUTON SE CONNECTER -->
-            <div>
-                <a href="/connexion">
-                    <button type="button" class="btn btn-success btn-lg" style="width:75%;">
-                        <i class="fa-regular fa-user pe-2" style="margin-right: 0.5em;"></i>Se connecter
-                    </button>
-                </a>
-            </div>
-            {% endif %}
             <br>
+
+
+            <div class="list-group list-group-light">
+
+                {% if is_authenticated %}
+
+                <a href="/profil">
+                    <button id="profileIndex" type="button" style="background-color: rgba(25, 135, 84, 0.5); color:black;" class="list-group-custom-success list-group-item list-group-item-action px-3 border-0  list-group-item-success"
+                    aria-current="true">
+                    Voir son profil
+                    </button>
+                </a>
+                <a href="/deconnexion">
+                    <button type="button" class=" list-group-custom-success list-group-item list-group-item-action px-3 border-0  mb-2 list-group-item-success">
+                    Se déconnecter
+                    </button>
+                </a>
+
+                {% else %}
+
+                <a href="/connexion">
+                    <button id="authIndex" type="button" style="background-color: rgba(25, 135, 84, 0.5); color:black;" class="list-group-custom-success list-group-item list-group-item-action px-3 border-0  list-group-item-success"
+                    aria-current="true">
+                    Se connecter
+                    </button>
+                </a>
+                <a href="/inscription">
+                    <button type="button" class=" list-group-custom-success list-group-item list-group-item-action px-3 border-0  mb-2 list-group-item-success">
+                    S'inscrire
+                    </button>
+                </a>
+                {% endif %}
+
+                {% if privileges == "admin" %}
+
+                <a href="/userlist">
+                    <button type="button" class=" list-group-custom-success list-group-item list-group-item-action px-3 border-0  mb-2 list-group-item-success">
+                    Accéder à la liste des utilisateurs
+                    </button>
+                </a>
+
+                {% endif %}
+            </div>
+
+
+            <br>
+
+
+            <div class="list-group list-group-light">
+                <!-- BOUTON BIBLIOTHEQUE -->
+                <a href="/liste">
+                    <button id="listeIndex" type="button" style="background-color: rgba(25, 135, 200, 0.5); color:black;" class="list-group-custom-primary list-group-item list-group-item-action px-3 border-0  list-group-item-primary"
+                    aria-current="true">
+                    Accéder à la bibliothèque
+                    </button>
+                </a>
+                <!-- BOUTON AJOUTER UN LIVRE -->
+                <a href="/ajouter">
+                    <button type="button" class=" list-group-custom-primary list-group-item list-group-item-action px-3 border-0  mb-2 list-group-item-primary">
+                    Ajouter un livre
+                    </button>
+                </a>
+            </div>
+
+
+
+            </div>
         </div>
     </div>
 </main>

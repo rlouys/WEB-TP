@@ -46,7 +46,11 @@
                                     <td>{{user.email}}</td>
                                     <td>{{user.firstname}}</td>
                                     <td>{{user.name}}</td>
-                                    <td>{{user.privileges}}</td>
+                                    {% if user.privileges|lower == "admin" %}
+                                    <td><span class="badge badge-danger badge-privileges">{{user.privileges}}</span></td>
+                                    {% elif user.privileges|lower == "user" %}
+                                    <td><span class="badge badge-success badge-privileges">client</span></td>
+                                    {% endif %}
                                     <td>{{user.date_added}}</td>
                                     <td>{{user.is_locked}}</td>
                                     <td>
@@ -73,11 +77,11 @@
                             <nav aria-label="Page navigation">
                                 <ul class="pagination nav-clue">
                                     {% if page > 3 %}
-                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/liste?page=1"><i class="fa-solid fa-backward-fast"></i></a></li>
+                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/userlist?page=1"><i class="fa-solid fa-backward-fast"></i></a></li>
                                     {% endif %}
 
                                     {% if page > 1 %}
-                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/liste?page={{ page - 1 }}">Previous</a></li>
+                                        <li style="z-index: 2;" class="page-item"><a class="page-link" href="/userlist?page={{ page - 1 }}">Previous</a></li>
                                     {% endif %}
 
                                     {% set max_displayed_pages = 5 %}
@@ -116,20 +120,20 @@
 
 
 
-                         <p>
-                            {% if privileges == "admin" %}
-                            <a href='/empty_user_keep_admin' id="empty table" class="btn btn-outline-success">Empty Table</a>
-                            <a href='/userlist' id="add-random-users" class="btn btn-outline-success">Add Random Users</a>
-                            {% endif %}
-                            <a href='/ajouter_user' class="btn btn-outline-success">Ajouter un nouvel utilisateur</a>
-                        </p>
+                            <div>
+                                {% if privileges == "admin" %}
 
-                        </div>
+                                <a href='/empty_user_keep_admin' id="empty table" class="btn btn-outline-success">Empty Table</a>
 
-
-
-
-
+                                <div class="btn-group">
+                                    <a href="javascript:void(0)" class="btn btn-success active disabled"  data-mdb-ripple-init>Add Random Users</a>
+                                    <a href="javascript:void(0)" id="add-random-users-5" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>5</a>
+                                    <a href="javascript:void(0)" id="add-random-users-50" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>50</a>
+                                </div>
+                                {% endif %}
+                                <a href='/ajouter_user' class="btn btn-outline-success">Ajouter un nouvel utilisateur</a>
+                            </div>
+                    </div>
 
         </div>
     </div>

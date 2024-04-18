@@ -28,7 +28,7 @@ class AddUsernameToRequestMiddleware(BaseHTTPMiddleware):
                     user_id = get_user_id_from_token(token)
                     userFromToken = db.query(User).filter(User.id == user_id).first()
                     if userFromToken:
-                        username = userFromToken.username
+                        username = userFromToken.username.capitalize()
                         if userFromToken.privileges == 'admin':
                             privileges = userFromToken.privileges
                             print(privileges)

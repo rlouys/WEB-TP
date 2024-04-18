@@ -65,29 +65,40 @@ async def modifier_user(request: Request,
                         db: Session = Depends(get_db),
                         id: Optional[int] = Form(None),
                         username: str = Form(...),
+                        name: str = Form(...),
+                        firstname: str = Form(...),
                         email: str = Form(...),
                         privileges: str = Form(...),
                         password: Optional[str] = Form(None),
                         confirm_password: Optional[str] = Form(None),
-                        is_locked: bool = Form(...)
+                        is_locked: bool = Form(...),
+                        modify: str = Form(None)
                         ):
-    if len(password) < 4:
-        return render_error_template(request, "ajouter_user.html",
-                                     "Le mot de passe doit contenir au moins 4 caractères.")
-    if password != confirm_password:
+
+
+    if password != None:
+        if len(password) < 4:
+            return render_error_template(request, "ajouter_user.html",
+                                         "Le mot de passe doit contenir au moins 4 caractères.")
+    if password and password != confirm_password:
+
         return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
-    # Verifie si le username existe déjà dans la DB
-    if db.query(User).filter(
-            (func.lower(User.email) == func.lower(email)) |
-            (func.lower(User.username) == func.lower(username))
-    ).first():
-        return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
+
+    if not modify:
+        # Verifie si le username existe déjà dans la DB
+        if db.query(User).filter(
+                (func.lower(User.email) == func.lower(email)) |
+                (func.lower(User.username) == func.lower(username))
+        ).first():
+            return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
 
     user = db.query(User).filter(User.id == id).first()
     if not user:
         new_user = User(
             username=username,
             email=email,
+            name=name,
+            firstname=firstname,
             privileges=privileges,
             password_hash=generate_password_hash(password),
             is_locked=is_locked
@@ -103,11 +114,13 @@ async def modifier_user(request: Request,
         user.username = username
         user.email = email
         user.privileges = privileges
+        user.name = name
+        user.firstname = firstname
         user.is_locked = is_locked
 
-        if password and confirm_password and password == confirm_password:
+        if password and password != None and confirm_password and password == confirm_password:
             user.password_hash = generate_password_hash(password)
-        elif password or confirm_password:
+        elif password != None and (password or confirm_password):
             raise HTTPException(status_code=400,
                                 detail="Both password and confirm password must be provided and match.")
 
@@ -128,6 +141,8 @@ async def ajouter_user(request: Request,
                        db: Session = Depends(get_db),
                        username: str = Form(...),
                        email: str = Form(...),
+                       name: str = Form(...),
+                       firstname: str = Form(...),
                        privileges: str = Form(...),
                        password: Optional[str] = Form(None),
                        confirm_password: Optional[str] = Form(None),
@@ -149,6 +164,8 @@ async def ajouter_user(request: Request,
     new_user = User(
         username=username,
         email=email,
+        name=name,
+        firstname=firstname,
         privileges=privileges,
         password_hash=generate_password_hash(password),
         is_locked=is_locked

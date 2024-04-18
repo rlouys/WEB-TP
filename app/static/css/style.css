@@ -40,7 +40,18 @@ body {
 
 /* HEADINGS */
 
+.badge-privileges{
+    border-bottom: 1px solid black!important;
+    font-size: 0.8rem!important;
+}
 
+.btn-adduser {
+    width: 2rem!important;  /* Adjusted width for better visibility */
+    display: inline-flex!important;  /* Uses flexbox to center content */
+    justify-content: center!important;  /* Center horizontally */
+    align-items: center!important;  /* Center vertically */
+    padding: 0.1rem 0!important;  /* Adjust padding as needed */
+}
 
 h1{
     font-weight: bold;
@@ -398,6 +409,17 @@ input:focus + label {
 
 /* BODY */
 
+body.darkmode #listeIndex,
+body.darkmode #authIndex,
+body.darkmode #profileIndex{
+    color:white!important;
+}
+
+body.darkmode #privileges option {
+    background-color: #495057; /* Slightly lighter background for options */
+    color: #abd5bd; /* Consistent text color for options */
+}
+
 body.darkmode #nombre-livre p{
     color: #abd5bd !important;
 }
@@ -614,3 +636,11 @@ body.darkmode .form-floating{
     transform: translate3d(-15%, -2%, 0);
 }
 
+
+.list-group-custom-primary:hover{
+    background-color: rgba(25,135,255,0.8)!important;
+}
+
+.list-group-custom-success:hover{
+    background-color: rgba(25,150,84,0.8)!important;
+}

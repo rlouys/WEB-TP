@@ -24,12 +24,18 @@
                     {{ macro.generateNewFormField("email", '', '', true, "text", '', "Adresse e-mail") }}
                     <br>
 
+                    {{ macro.generateNewFormField("name", '', '', true, "name", '', "Name") }}
+                    <br>
+
+                    {{ macro.generateNewFormField("firstname", '', '', true, "firstname", '', "Firstname") }}
+                    <br>
+
                     <!-- USER PRIVILEGES -->
                     <div class="form-outline" style="width: 100%; margin-bottom: 1rem;">
                         <select name="privileges" class="selectmdb select form-control form-controls" id="privileges" style="border: 1px solid #BEBEBE; color:darkgreen;">
                           <option selected disabled>Droits</option>
                           <option value="admin">Administrateur</option>
-                          <option value="user">User</option>
+                          <option value="user">Client</option>
                         </select>
                     </div>
 

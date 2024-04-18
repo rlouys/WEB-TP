@@ -55,34 +55,38 @@ function launchAlert() {
    CREATE RANDOM BOOKS
  *******************************************************************/
 
-
 document.addEventListener("DOMContentLoaded", function() {
-    const addButton = document.getElementById("add-random-books");
-    addButton.addEventListener("click", async function(event) {
-        event.preventDefault(); // Prevent the default action of the <a> tag
-        console.log("Button clicked");
+    const addButton10 = document.getElementById("add-random-books-10");
+    const addButton100 = document.getElementById("add-random-books-100");
+
+    // Function to handle adding books
+    async function addBooks(bookCount) {
+        console.log(`Button clicked to add ${bookCount} books`);
 
         try {
-            const response = await fetch("/generate_random_books");
+            const response = await fetch(`/generate_random_books?count=${bookCount}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log("Books fetched successfully", data);
+                console.log("Books added successfully", data);
 
-                // Update the DOM with the new books
-
+                // Optionally update the DOM with the new books
                 // Redirect to /liste or refresh the page to show updated books
                 console.log("Redirecting to /liste to show updated books.");
                 window.location.href = '/liste'; // Redirect to the list page
             } else if (response.status === 401) {
-                // Handle the authentication error
-                launchAlert();
+                console.error("Authentication error");
+                // Optionally handle authentication error more specifically
             } else {
-                throw new Error("Failed to fetch data from the server");
+                throw new Error(`Failed to fetch data from the server: ${response.status}`);
             }
         } catch (error) {
             console.error("Error:", error);
         }
-    });
+    }
+
+    // Event listeners for each button
+    addButton10.addEventListener("click", () => addBooks(10));
+    addButton100.addEventListener("click", () => addBooks(100));
 });
 
 
@@ -92,32 +96,38 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const addButton = document.getElementById("add-random-users");
-    addButton.addEventListener("click", async function(event) {
-        event.preventDefault(); // Prevent the default action of the <a> tag
-        console.log("Button clicked");
+    const addButton5 = document.getElementById("add-random-users-5");
+    const addButton50 = document.getElementById("add-random-users-50");
+
+    // Function to handle adding users
+    async function addUser(userCount) {
+        console.log(`Button clicked to add ${userCount} users`);
 
         try {
-            const response = await fetch("/generate_random_user");
+            const response = await fetch(`/generate_random_user?count=${userCount}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log("Users fetched successfully", data);
+                console.log("Users added successfully", data);
 
-                // Update the DOM with the new books
-
-                // Redirect to /liste or refresh the page to show updated books
-                console.log("Redirecting to /userlist to show updated books.");
+                // Optionally update the DOM with the new users
+                // Redirect to /userlist or refresh the page to show updated users
+                console.log("Redirecting to /userlist to show updated users.");
                 window.location.href = '/userlist'; // Redirect to the list page
             } else if (response.status === 401) {
-                // Handle the authentication error
-                launchAlert();
+                console.error("Authentication error");
+                // Optionally handle authentication error more specifically
             } else {
-                throw new Error("Failed to fetch data from the server");
+                throw new Error(`Failed to fetch data from the server: ${response.status}`);
             }
         } catch (error) {
             console.error("Error:", error);
         }
-    });
+    }
+
+    // Event listeners for each button
+    addButton5.addEventListener("click", () => addUser(5));
+    addButton50.addEventListener("click", () => addUser(50));
+
 });
 
 

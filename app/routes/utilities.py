@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status
+from fastapi import Query, FastAPI, Request, Depends, HTTPException, APIRouter, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -35,7 +35,7 @@ async def empty_livres(db: Session = Depends(get_db)):
 
 
 @router.get("/generate_random_books", response_class=JSONResponse)
-async def generate_random_books(request: Request, db: Session = Depends(get_db)):
+async def generate_random_books(request: Request, db: Session = Depends(get_db), count: int = Query(10, gt=0, le=100)):
         token = request.cookies.get('access_token')
 
         if token is None:
@@ -47,25 +47,29 @@ async def generate_random_books(request: Request, db: Session = Depends(get_db))
                 # Get current user from token id
                 user_id_from_cookies = get_user_id_from_token(token)
 
-                # Generate random book details using Faker
-                book_names = [faker.catch_phrase() for _ in range(10)]
-                authors = [faker.name() for _ in range(10)]
-                publishers = [faker.company() for _ in range(10)]
-                prices = [faker.pyfloat(positive=True, min_value=10, max_value=100, right_digits=2) for _ in
-                          range(10)]  # Random price between 10 and 100 with 2 decimal places
 
                 # Insert the generated random books into the database
                 books = []
-                for i in range(10):
+                print(count)
+                print("test")
+                for _ in range(count):
+                    # Generate random book details using Faker
+                    username = faker.user_name()
+                    email = faker.email()
+                    book_name = faker.catch_phrase()
+                    author = faker.name()
+                    publisher = faker.company()
+                    price = faker.pyfloat(positive=True, min_value=10, max_value=100, right_digits=2)
+
                     livre = Livre(
-                        nom=book_names[i],
-                        auteur=authors[i],
-                        editeur=publishers[i],
-                        price=prices[i],
-                        stock=1,  # Set stock to 1
-                        created_by=user_id_from_cookies,  # Set the user ID who created the book
-                        modified_by=user_id_from_cookies,  # Set the user ID who last modified the book
-                        owner_id=user_id_from_cookies  # Set the user ID who owns the book
+                        nom=book_name,
+                        auteur=author,
+                        editeur=publisher,
+                        price=price,
+                        stock=1,
+                        created_by=user_id_from_cookies,
+                        modified_by=user_id_from_cookies,
+                        owner_id=user_id_from_cookies
                     )
                     db.add(livre)
                     books.append({
@@ -98,7 +102,7 @@ async def empty_user_keep_admin(db: Session = Depends(get_db)):
 
 
 @router.get("/generate_random_user", response_class=JSONResponse)
-async def generate_random_user(request: Request, db: Session = Depends(get_db)):
+async def generate_random_user(request: Request, db: Session = Depends(get_db), count: int = Query(5, gt=0, le=100)):
     token = request.cookies.get('access_token')
 
     if token is None:
@@ -118,13 +122,17 @@ async def generate_random_user(request: Request, db: Session = Depends(get_db)):
         is_locked = False
         hashed_password = generate_password_hash(password)
 
-        for _ in range(5):
+        for _ in range(count):
             username = faker.user_name()
             email = faker.email()
+            name = faker.name()
+            firstname = faker.first_name()
 
             new_user = User(
                 username=username,
                 email=email,
+                name=name,
+                firstname=firstname,
                 password_hash=hashed_password,
                 privileges=privileges,
                 is_locked=is_locked
@@ -133,13 +141,14 @@ async def generate_random_user(request: Request, db: Session = Depends(get_db)):
             users.append({
                 "username": username,
                 "email": email,
+                "name": name,
+                "firstname": firstname,
                 "password": hashed_password,
                 "privileges": privileges,
                 "is_locked": is_locked
             })
 
         db.commit()
-        print("TEST")
         return users
     except Exception as e:
         db.rollback()
