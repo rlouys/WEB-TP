@@ -15,6 +15,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Generate base class for declarative classes from the data (Class parameter in model.py)
 Base = declarative_base()  # Adjusted to call declarative_base()
 
+# Fonction qui crée la database telle que conceptualisée dans Models
 def create_database():
     Base.metadata.create_all(engine)
 

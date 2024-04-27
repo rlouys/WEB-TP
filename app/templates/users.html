@@ -88,6 +88,7 @@
                                         <li style="z-index: 2;" class="page-item"><a class="page-link" href="/userlist?page={{ page - 1 }}">Previous</a></li>
                                     {% endif %}
 
+                                    <!-- LOGIQUE DE DISPLAY DES BOUTONS DE PAGINATION -->
                                     {% set max_displayed_pages = 5 %}
                                     {% set start_page = 1 %}
                                     {% set end_page = total_pages %}

@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const addButton10 = document.getElementById("add-random-books-10");
     const addButton100 = document.getElementById("add-random-books-100");
 
-    // Function to handle adding books
     async function addBooks(bookCount) {
         console.log(`Button clicked to add ${bookCount} books`);
 
@@ -68,13 +67,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 const data = await response.json();
                 console.log("Books added successfully", data);
 
-                // Optionally update the DOM with the new books
-                // Redirect to /liste or refresh the page to show updated books
                 console.log("Redirecting to /liste to show updated books.");
                 window.location.href = '/liste'; // Redirect to the list page
             } else if (response.status === 401) {
                 console.error("Authentication error");
-                // Optionally handle authentication error more specifically
             } else {
                 throw new Error(`Failed to fetch data from the server: ${response.status}`);
             }
@@ -83,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Event listeners for each button
+    // Event listeners
     if (addButton10 != null && addButton100 != null) {
         addButton10.addEventListener("click", () => addBooks(10));
         addButton100.addEventListener("click", () => addBooks(100));
@@ -110,13 +106,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 const data = await response.json();
                 console.log("Users added successfully", data);
 
-                // Optionally update the DOM with the new users
-                // Redirect to /userlist or refresh the page to show updated users
                 console.log("Redirecting to /userlist to show updated users.");
                 window.location.href = '/userlist'; // Redirect to the list page
             } else if (response.status === 401) {
                 console.error("Authentication error");
-                // Optionally handle authentication error more specifically
             } else {
                 throw new Error(`Failed to fetch data from the server: ${response.status}`);
             }
@@ -125,16 +118,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Event listeners for each button
+    // Event listeners
     if (addButton5 != null && addButton50 != null) {
         addButton5.addEventListener("click", () => addUser(5));
         addButton50.addEventListener("click", () => addUser(50));
     }
-
 });
-
-
-
 
 /*******************************************************************
    SUPPRIMER UN LIVRE ( Affiche un message d'alerte SweetAlerts )
@@ -227,7 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const darkModeToggleSwitch = document.getElementById('flexSwitchCheckCheckedDark');
     const wrapper = document.querySelector('.wrapper.header'); // permet de corriger l'arrière plan de la sidebar (à cause du radius)
     const askpass = document.getElementById('askpass'); // permet de colorer en blanc le "Forgot your password?"
+
+
+
     // Utility functions to manage cookies
+
     function setCookie(name, value, days) {
         var expires = "";
         if (days) {
@@ -256,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    /* VALEUR PAR DEFAUT DES COOKIES DARKMODE ET NAVBAR */
     setDefaultCookieIfAbsent('darkmode', 'false', 1);
     setDefaultCookieIfAbsent('navmode', 'false', 1); // Assuming you also want a default for the navbar
 

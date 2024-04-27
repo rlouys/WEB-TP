@@ -18,7 +18,7 @@
         <br>
             <div id="livres-list">
                 <div>
-
+                    <!-- TABLEAU -->
                     <table class="table table-responsive-sm table-light table-hover" >
                         <thead>
                             <tr class="table-success">
@@ -83,7 +83,7 @@
                                     {% if page > 1 %}
                                         <li style="z-index: 2;" class="page-item"><a class="page-link" href="/liste?page={{ page - 1 }}">Previous</a></li>
                                     {% endif %}
-
+                                    <!-- LOGIQUE D'AFFICHAGE DES BOUTONS -->
                                     {% set max_displayed_pages = 5 %}
                                     {% set start_page = 1 %}
                                     {% set end_page = total_pages %}
@@ -121,13 +121,18 @@
 
 
                             <div>
+                                <!-- BOUTONS SPÉCIAUX -->
                                 {% if privileges == "admin" %}
 
+                                <!-- VIDE LES LIVRES -->
                                 <a href='/empty_livres' id="empty table" class="btn btn-outline-success">Empty Table</a>
 
                                 <div class="btn-group">
+                                    <!-- ADD RANDOM BOOKS -->
                                     <a href="javascript:void(0)" class="btn btn-success active disabled"  data-mdb-ripple-init>Add Random Books</a>
+                                    <!-- AJOUTER 10 LIVRES -->
                                     <a href="javascript:void(0)" id="add-random-books-10" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>10</a>
+                                    <!-- AJOUTER 100 LIVRES -->
                                     <a href="javascript:void(0)" id="add-random-books-100" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>100</a>
                                 </div>
                                 {% endif %}

@@ -46,11 +46,11 @@ body {
 }
 
 .btn-adduser {
-    width: 2rem!important;  /* Adjusted width for better visibility */
-    display: inline-flex!important;  /* Uses flexbox to center content */
-    justify-content: center!important;  /* Center horizontally */
-    align-items: center!important;  /* Center vertically */
-    padding: 0.1rem 0!important;  /* Adjust padding as needed */
+    width: 2rem!important;
+    display: inline-flex!important;
+    justify-content: center!important;
+    align-items: center!important;
+    padding: 0.1rem 0!important;
 }
 
 h1{
@@ -167,8 +167,8 @@ footer.fixed-bottom {
     background-color: rgba(255, 245, 245, 0.95);
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    border-top-right-radius: 15px; /* Rounds the top-left corner */
-    border-bottom-right-radius: 15px; /* Rounds the bottom-left corner */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
 .navbar-toggler-icon{
@@ -379,10 +379,9 @@ input:focus + label {
       FORMS
 ******************/
 
-/* Remove the focus ring */
 .form-check-input:focus {
     box-shadow: none !important;
-    box-shadow: 0 0 0 0.12rem rgba(25, 135, 84, 0.5) !important; /* Example for a green halo */
+    box-shadow: 0 0 0 0.12rem rgba(25, 135, 84, 0.5) !important;
 
 }
 
@@ -421,8 +420,8 @@ body.darkmode #profileIndex{
 }
 
 body.darkmode #privileges option {
-    background-color: #495057; /* Slightly lighter background for options */
-    color: #abd5bd; /* Consistent text color for options */
+    background-color: #495057;
+    color: #abd5bd;
 }
 
 body.darkmode #nombre-livre p{
@@ -444,7 +443,6 @@ body.darkmode .btn.btn-outline-danger {
     background-color: #343a40;
     border-color: red;
 }
-
 
 /* Override button colors on hover */
 body.darkmode .btn.btn-outline-success:hover {
@@ -497,7 +495,6 @@ body.darkmode .table thead th {
     color: white;
 }
 
-/* Adjust button colors in dark mode as necessary */
 body.darkmode .btn-light {
     background-color: #F8F8F8;
     color: black;
@@ -554,9 +551,9 @@ body.darkmode .form-floating{
 
 /* SIDEBAR */
 .sidebar-darkmode {
-    background-color: rgba(22, 42, 70, 0.95)!important; /* Slightly translucent background for a frosted glass effect */
-    backdrop-filter: blur(5px); /* Blur effect for the background elements seen through the sidebar, enhancing the glass effect */
-    border-right: 1px solid rgba(255, 255, 255, 0.1); /* A subtle border to define the edge */
+    background-color: rgba(22, 42, 70, 0.95)!important;
+    backdrop-filter: blur(5px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.35s ease-in-out;
 }
 
@@ -615,9 +612,9 @@ body.darkmode .form-floating{
 
 #option2:checked + label,
 #option3:checked + label {
-    box-shadow: 0px 0px 5px green; /* X-offset, Y-offset, Blur radius, Color */
+    box-shadow: 0px 0px 5px green;
     color: green;  /* Change text color to green when checked */
-    font-weight: bold; /* Make the text bold */
+    font-weight: bold;
 }
 
 #option2:checked + label:hover,
@@ -625,8 +622,6 @@ body.darkmode .form-floating{
     box-shadow: 0px 0px 5px green!important; /* Keep the same shadow on hover */
 }
 
-
-/* Ensure the parent is positioned relative so that the absolute positioning of the dropdown-menu is relative to the nav-item */
 .nav-item.dropdown {
     position: relative;
 }

@@ -38,16 +38,22 @@
                     <br>
                     <!-- USER PRIVILEGES -->
                     <div class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+
                         <select name="privileges" class="selectmdb select form-control form-controls" id="privileges" style="border: 1px solid #BEBEBE; color:darkgreen;">
 
+                            <!-- S'il y a une erreur, le privileges est conservé -->
                             {% if privilegesError == "admin" %}
                             <option disabled>Droits</option>
                             <option selected value="admin">Administrateur</option>
                             <option value="user">Client</option>
+
+                            <!-- USER -->
                             {% elif privilegesError == "user" %}
                             <option disabled>Droits</option>
                             <option value="admin">Administrateur</option>
                             <option selected value="user">Client</option>
+
+                            <!-- S'il y a aucune data en cache, pas de privileges par défaut -->
                             {% else %}
                             <option selected disabled>Droits</option>
                             <option value="admin">Administrateur</option>
@@ -72,15 +78,10 @@
                       <label class="btn btn-success" for="option1" data-mdb-ripple-init>Bloqué</label>
 
                       <!-- Radio button for "lock" -->
-
-
                       <input type="radio" class="btn-check" name="is_locked" id="option2" value="true" autocomplete="off" />
                       <label class="btn" for="option2" data-mdb-ripple-init>Oui</label>
                       <input type="radio" class="btn-check" name="is_locked" id="option3" value="false" autocomplete="off" checked/>
                       <label class="btn" for="option3" data-mdb-ripple-init>Non</label>
-
-
-                      <!-- Default Radio button for "Unlocked" checked by default -->
                     </div>
 
                     <br>
@@ -88,9 +89,12 @@
 
 
                     <div class="form-group">
+                        <!-- Bouton RETOUR -->
                         <a href="/userlist" class="btn btn-outline-secondary">Retour</a>
+                        <!-- Bouton Ajouter -->
                         <button type="submit" class="btn btn-outline-success" onclick="submitForm('/userlist')">Ajouter</button>
-                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/ajouter_user')">Continuer</button>
+                        <!-- Bouton Ajouter et Continuer -->
+                        <button type="submit" class="btn btn-outline-success" onclick="submitForm('/ajouter_user')">Ajouter et Continuer</button>
                     </div>
                 </form>
 
@@ -100,9 +104,9 @@
 </div>
 
 <script>
+    /* Permet de modifier l'action de la <form> */
     function submitForm(action) {
-        document.getElementById('ajouter_user').action = action;
-    }
+        document.getElementById('ajouter_user').action = action;}
 </script>
 
 {% endblock %}

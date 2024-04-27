@@ -19,6 +19,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 240
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# FONCTION QUI PERMET DE GÉNÉRER UN TOKEN D'AUTHENTIFICATION
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedelta(minutes=240)):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
@@ -26,6 +27,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedel
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+############################################################################################################################################
+
+# FONCTION QUI PERMET DE VÉRIFIER SI UN TOKEN EST VALIDE
 def verify_token(token: str):
     exception_de_credentials = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -41,6 +45,9 @@ def verify_token(token: str):
     except JWTError:
         raise exception_de_credentials
 
+############################################################################################################################################
+
+# RECUPÈRE LE USER DEPUIS LE TOKEN
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     if not token:
@@ -63,6 +70,9 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
 
     return user
 
+############################################################################################################################################
+
+# RECUPÈRE LE USER.ID DEPUIS LE TOKEN
 def get_user_id_from_token(token: str):
     try:
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -81,9 +91,10 @@ def get_user_id_from_token(token: str):
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+############################################################################################################################################
+
 def extract_user_data_from_token(token: str):
     try:
-        # Assurez-vous de retirer le préfixe 'Bearer ' si présent
         if token.startswith("Bearer "):
             token = token[7:]
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
