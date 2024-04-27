@@ -34,11 +34,15 @@
 <div data-mdb-input-init class="form-outline" style="width: 100%; margin-bottom: 1rem;">
     {% if isPrice %}
     <i class="fas fa-euro-sign trailing"></i>
-    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}"   class="form-control form-controls form-icon-trailing" />
+    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}"   class="form-control form-controls form-icon-trailing" required />
     <label class="form-label form-labels" for="{{ id }}">{{ title }}</label>
 
     {% else %}
-    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}"   class="form-control form-controls" />
+    <input name="{{id}}" id="{{ id }}" step = "{{step}}" value="{{ value }}" type="{{type}}" class="form-control form-controls"
+           required
+           pattern="{{ '\\d*' if numeric_only else '\\S+.*' }}"
+           title="{{ 'This field cannot be blank.' }}" />
+
     <label class="form-label form-labels" for="{{ id }}">{{ title }}</label>
 
     {% endif %}

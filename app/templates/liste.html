@@ -51,13 +51,13 @@
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">
-                                            {% if user_name == livre.owner.username or user_isadmin%}
+                                            {% if username|lower == livre.owner.username|lower or user_isadmin%}
                                             <button type="button" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="redirectToModify({{ livre.id }})">
                                                 <i class="fa-regular fa-pen-to-square fa-xl"></i>
                                             </button>
                                             {% endif %}
                                             <!-- BUTTON DELETE -->
-                                            {% if user_name == livre.owner.username or user_isadmin%}
+                                            {% if username|lower == livre.owner.username|lower or user_isadmin%}
                                             <button type="submit" class="btn btn-light w-10 h-10 p-0 rounded-full" onclick="confirmDeletion({{livre.id}})">
                                                 <i class="fa-solid fa-trash fa-xl"></i>
                                             </button>
@@ -131,7 +131,9 @@
                                     <a href="javascript:void(0)" id="add-random-books-100" class="btn btn-outline-success btn-adduser"  data-mdb-ripple-init>100</a>
                                 </div>
                                 {% endif %}
+                                {% if is_authenticated %}
                                 <a href='/ajouter' class="btn btn-outline-success">Ajouter un nouveau livre</a>
+                                {% endif %}
                             </div>
                         </div>
 

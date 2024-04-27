@@ -19,7 +19,7 @@
     <!-- FORM TO SUBMIT CONNEXION INFOS -->
     <form action="/connexion" method="POST" class="mb-3">
         <!-- USERNAME -->
-        {{ macro.generateFormField('username', '', 'Nom d\'utilisateur ou e-mail', 'Nom d\'utilisateur ou e-mail') }}
+        {{ macro.generateFormField('username', usernameError, 'Nom d\'utilisateur ou e-mail', 'Nom d\'utilisateur ou e-mail') }}
         <br>
         <!-- PASSWORD -->
         {{ macro.generateFormField("password", '', "Mot de passe", "password", "password") }}

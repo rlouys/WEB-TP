@@ -52,7 +52,11 @@
                                     <td><span class="badge badge-success badge-privileges">client</span></td>
                                     {% endif %}
                                     <td>{{user.date_added}}</td>
-                                    <td>{{user.is_locked}}</td>
+                                    {% if user.is_locked == True %}
+                                    <td>Oui</td>
+                                    {% else %}
+                                    <td>Non</td>
+                                    {% endif %}
                                     <td>
                                         <!-- BUTTON EDIT -->
                                         <div class="flex items-center">

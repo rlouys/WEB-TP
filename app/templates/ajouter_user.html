@@ -5,9 +5,16 @@
     <div class="row justify-content-center align-items-center">
 
 
+
         <!-- Main Content -->
         <div class=" col-md-8">
             <div style="position: relative!important; max-width:60vh; width: 100%; margin: auto;" class="listePage">
+
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                {{ error }}
+                </div>
+                {% endif %}
 
                 <h1>Utilisateur</h1>
 
@@ -17,25 +24,36 @@
                 <form id="ajouter_user" action='' method="POST">
 
                     <!-- USER USERNAME -->
-                    {{ macro.generateNewFormField("username", '', '', true, "text", '', "Username") }}
+                    {{ macro.generateNewFormField("username", usernameError, '', true, "text", '', "Username") }}
                     <br>
 
                     <!-- USER EMAIL ADDRESS -->
-                    {{ macro.generateNewFormField("email", '', '', true, "text", '', "Adresse e-mail") }}
+                    {{ macro.generateNewFormField("email", email, '', true, "text", '', "Adresse e-mail") }}
                     <br>
 
-                    {{ macro.generateNewFormField("name", '', '', true, "name", '', "Name") }}
+                    {{ macro.generateNewFormField("name", nom, '', true, "name", '', "Name") }}
                     <br>
 
-                    {{ macro.generateNewFormField("firstname", '', '', true, "firstname", '', "Firstname") }}
+                    {{ macro.generateNewFormField("firstname", prenom, '', true, "firstname", '', "Firstname") }}
                     <br>
-
                     <!-- USER PRIVILEGES -->
                     <div class="form-outline" style="width: 100%; margin-bottom: 1rem;">
                         <select name="privileges" class="selectmdb select form-control form-controls" id="privileges" style="border: 1px solid #BEBEBE; color:darkgreen;">
-                          <option selected disabled>Droits</option>
-                          <option value="admin">Administrateur</option>
-                          <option value="user">Client</option>
+
+                            {% if privilegesError == "admin" %}
+                            <option disabled>Droits</option>
+                            <option selected value="admin">Administrateur</option>
+                            <option value="user">Client</option>
+                            {% elif privilegesError == "user" %}
+                            <option disabled>Droits</option>
+                            <option value="admin">Administrateur</option>
+                            <option selected value="user">Client</option>
+                            {% else %}
+                            <option selected disabled>Droits</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="user">Client</option>
+                            {% endif %}
+
                         </select>
                     </div>
 
@@ -67,6 +85,8 @@
 
                     <br>
 
+
+
                     <div class="form-group">
                         <a href="/userlist" class="btn btn-outline-secondary">Retour</a>
                         <button type="submit" class="btn btn-outline-success" onclick="submitForm('/userlist')">Ajouter</button>
@@ -82,7 +102,6 @@
 <script>
     function submitForm(action) {
         document.getElementById('ajouter_user').action = action;
-        document.getElementById('ajouter_user').submit();
     }
 </script>
 

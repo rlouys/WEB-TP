@@ -58,13 +58,23 @@
 
                     <br>
                     <!-- USER PASSWORD -->
-                    {{ macro.generateNewFormField("password", '', user.password_hash, true, "password", '', "New Password") }}
+                    <div data-mdb-input-init class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+                        <input name="password" id="password" type="password" class="form-control form-controls"
+                               pattern="{{ '\\d*' if numeric_only else '\\S+.*' }}"
+                               title="{{ 'This field cannot be blank.' }}" />
+                        <label class="form-label form-labels" for="password">New Password</label>
+                    </div>
+
                     <br>
 
 
-
+                    <div data-mdb-input-init class="form-outline" style="width: 100%; margin-bottom: 1rem;">
+                        <input name="confirm_password" id="confirm_password" type="password" class="form-control form-controls"
+                               pattern="{{ '\\d*' if numeric_only else '\\S+.*' }}"
+                               title="{{ 'This field cannot be blank.' }}" />
+                        <label class="form-label form-labels" for="password">Confirm Password</label>
+                    </div>
                     <!-- CONFIRM PASSWORD -->
-                    {{ macro.generateNewFormField("confirm_password", '', '', true, "password", '', "Confirm Password") }}
 
                     <div class="btn-group user-radio" style="margin-bottom: 2rem;">
                       <!-- Radio button for "Locked" -->

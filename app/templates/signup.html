@@ -5,9 +5,9 @@
 
 <div style="max-width:60vh; width: 100%; margin: auto;" class="listePage">
 
-        {% if error %}
+    {% if error %}
     <div class="alert alert-danger" role="alert">
-        {{ error }}
+    {{ error }}
     </div>
     {% endif %}
 
@@ -18,16 +18,16 @@
     <!-- FORM TO SUBMIT INSCRIPTION INFOS -->
     <form action="/inscription" method="POST" class="mb-3">
         <!-- USERNAME -->
-        {{ macro.generateFormField("new_username", '', "Nom d'utilisateur") }}
+        {{ macro.generateFormField("new_username", usernameError, "Nom d'utilisateur") }}
         <br>
         <!-- EMAIL -->
-        {{ macro.generateFormField("new_email", '', "Adresse email") }}
+        {{ macro.generateFormField("new_email", email, "Adresse email") }}
         <br>
         <!-- NOM -->
-        {{ macro.generateFormField("new_name", '', "Nom") }}
+        {{ macro.generateFormField("new_name", nom, "Nom") }}
         <br>
         <!-- PRENOM -->
-        {{ macro.generateFormField("new_firstname", '', "Prénom") }}
+        {{ macro.generateFormField("new_firstname", prenom, "Prénom") }}
         <br>
         <!-- PASSWORD -->
         {{ macro.generateFormField("new_password", '', "Mot de passe", "password", "password") }}

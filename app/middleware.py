@@ -13,9 +13,10 @@ from app.data.dependencies import get_db
 class AddUsernameToRequestMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Vous pourriez récupérer le nom d'utilisateur d'un cookie ou d'une autre manière de stockage
-        is_authenticated = request.cookies.get('is_authenticated')
+        #is_authenticated = request.cookies.get('is_authenticated')
+        is_authenticated = False
         # username = request.cookies.get("username", "Utilisateur")
-        privileges =''
+        privileges = ''
         response = None
         db: Session = next(get_db())
 
@@ -28,6 +29,7 @@ class AddUsernameToRequestMiddleware(BaseHTTPMiddleware):
                     user_id = get_user_id_from_token(token)
                     userFromToken = db.query(User).filter(User.id == user_id).first()
                     if userFromToken:
+                        is_authenticated = True
                         username = userFromToken.username.capitalize()
                         if userFromToken.privileges == 'admin':
                             privileges = userFromToken.privileges

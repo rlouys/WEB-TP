@@ -171,6 +171,11 @@ footer.fixed-bottom {
     border-bottom-right-radius: 15px; /* Rounds the bottom-left corner */
 }
 
+.navbar-toggler-icon{
+    margin-left: -3vh;
+
+}
+
 #sidebar.collapsed {
     margin-left: -21vh;
 }
@@ -433,6 +438,13 @@ body.darkmode .btn.btn-outline-success {
     background-color: #343a40;
     border-color: #495057;
 }
+
+body.darkmode .btn.btn-outline-danger {
+    color: #abd5bd;
+    background-color: #343a40;
+    border-color: red;
+}
+
 
 /* Override button colors on hover */
 body.darkmode .btn.btn-outline-success:hover {

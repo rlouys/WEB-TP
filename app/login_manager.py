@@ -15,11 +15,11 @@ from app.data.dependencies import get_db
 # Secret key pour signer le JWT
 SECRET_KEY = "me5GjOLMAQDzFBijhZ9NosTNlkS0J5SH"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 120
+ACCESS_TOKEN_EXPIRE_MINUTES = 240
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedelta(minutes=120)):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedelta(minutes=240)):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})

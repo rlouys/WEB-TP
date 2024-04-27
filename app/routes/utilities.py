@@ -59,7 +59,7 @@ async def generate_random_books(request: Request, db: Session = Depends(get_db),
                     book_name = faker.catch_phrase()
                     author = faker.name()
                     publisher = faker.company()
-                    price = faker.pyfloat(positive=True, min_value=10, max_value=100, right_digits=2)
+                    price = faker.pyfloat(positive=True, min_value=5, max_value=45, right_digits=2)
 
                     livre = Livre(
                         nom=book_name,

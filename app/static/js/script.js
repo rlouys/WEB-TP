@@ -1,7 +1,6 @@
 /*******************************************************************
    SIDEBAR COLLAPSING
  *******************************************************************/
-console.log("Le script est chargé!");
 
 const toggler = document.querySelector(".btn");
 toggler.addEventListener("click", function () {
@@ -85,8 +84,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Event listeners for each button
-    addButton10.addEventListener("click", () => addBooks(10));
-    addButton100.addEventListener("click", () => addBooks(100));
+    if (addButton10 != null && addButton100 != null) {
+        addButton10.addEventListener("click", () => addBooks(10));
+        addButton100.addEventListener("click", () => addBooks(100));
+    }
 });
 
 
@@ -125,8 +126,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Event listeners for each button
-    addButton5.addEventListener("click", () => addUser(5));
-    addButton50.addEventListener("click", () => addUser(50));
+    if (addButton5 != null && addButton50 != null) {
+        addButton5.addEventListener("click", () => addUser(5));
+        addButton50.addEventListener("click", () => addUser(50));
+    }
 
 });
 
@@ -232,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
     }
 
     function getCookie(name) {
@@ -347,18 +350,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('email');
     const emailError = document.getElementById('emailError');
 
-    const originalUsername = usernameInput.value;
-    const originalEmail = emailInput.value;
+    let originalUsername = '';
+    let originalEmail = '';
+    if(usernameInput != null && emailInput != null)
+    {
+        originalUsername = usernameInput.value;
+        originalEmail = emailInput.value;
+    }
 
     // Fonction pour vérifier la validité du formulaire et activer/désactiver le bouton de soumission
     function checkFormValidity() {
-        const isUsernameErrorVisible = usernameError.style.display === 'block';
-        const isEmailErrorVisible = emailError.style.display === 'block';
-        submitBtn.disabled = isUsernameErrorVisible || isEmailErrorVisible; // Désactive le bouton si une erreur est visible
+        if(usernameError != null && emailError != null){
+            const isUsernameErrorVisible = usernameError.style.display === 'block';
+            const isEmailErrorVisible = emailError.style.display === 'block';
+            submitBtn.disabled = isUsernameErrorVisible || isEmailErrorVisible; // Désactive le bouton si une erreur est visible
+        }
     }
 
     // Validation du nom d'utilisateur
-    if (usernameInput) {
+    if (usernameInput != null) {
         usernameInput.addEventListener('input', function(e) {
             const newUsername = e.target.value;
             if (newUsername === originalUsername) {

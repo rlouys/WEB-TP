@@ -14,6 +14,8 @@ from typing import Optional
 from app.schemas import UserSchema
 import logging
 
+import re
+
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,6 +24,12 @@ router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
 
+# custom validator
+def validate_email(email):
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if re.match(pattern, email):
+        return True
+    return False
 
 ##############
 # USERS
@@ -30,6 +38,16 @@ templates = Jinja2Templates(directory="app/templates")
 # PAGE BIBLIOTHEQUE - GET
 @router.get("/userlist", response_class=HTMLResponse)
 async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
+
+    try:
+        is_authenticated = request.state.is_authenticated
+        if not is_authenticated:
+            raise HTTPException(status_code=401, detail="Unauthorized.")
+    except:
+        raise HTTPException(status_code=401, detail="Unauthorized.")
+
+
+
     user_id = 0
 
     per_page = 10
@@ -57,6 +75,8 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
     return templates.TemplateResponse("users.html", url_context)
 
 
+
+
 ############################################################################################################################################
 
 # PAGE MODIFIER USER - POST
@@ -64,10 +84,10 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
 async def modifier_user(request: Request,
                         db: Session = Depends(get_db),
                         id: Optional[int] = Form(None),
-                        username: str = Form(...),
+                        username: Optional[str] = Form(...),
                         name: str = Form(...),
                         firstname: str = Form(...),
-                        email: EmailStr = Form(...),
+                        email: str = Form(...),
                         privileges: str = Form(...),
                         password: Optional[str] = Form(None),
                         confirm_password: Optional[str] = Form(None),
@@ -75,14 +95,15 @@ async def modifier_user(request: Request,
                         modify: str = Form(None)
                         ):
 
+    if not validate_email(email):
+        return render_error_template(request, "ajouter_user.html", "Votre email n'est pas de la bonne forme.", username, email, name, firstname, privileges)
 
     if password != None:
         if len(password) < 4:
-            return render_error_template(request, "ajouter_user.html",
-                                         "Le mot de passe doit contenir au moins 4 caractères.")
+            return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.", username, email, name, firstname, privileges)
     if password and password != confirm_password:
 
-        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
+        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.", username, email, name, firstname, privileges)
 
     if not modify:
         # Verifie si le username existe déjà dans la DB
@@ -90,7 +111,7 @@ async def modifier_user(request: Request,
                 (func.lower(User.email) == func.lower(email)) |
                 (func.lower(User.username) == func.lower(username))
         ).first():
-            return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
+            return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.", username, email, name, firstname, privileges)
 
     user = db.query(User).filter(User.id == id).first()
     if not user:
@@ -132,6 +153,25 @@ async def modifier_user(request: Request,
 
 
 ############################################################################################################################################
+# (UN)LOCK USER
+############################################################################################################################################
+
+@router.post("/users/{user_id}/lock")
+async def lock_user(user_id: int, lock: bool, db: Session = Depends(get_db)):
+    print("test")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    print("test2")
+
+    user.is_locked = lock
+    db.commit()
+
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"success": True, "locked": lock})
+
+
+############################################################################################################################################
 
 ############################################################################################################################################
 
@@ -140,7 +180,7 @@ async def modifier_user(request: Request,
 async def ajouter_user(request: Request,
                        db: Session = Depends(get_db),
                        username: str = Form(...),
-                       email: EmailStr = Form(...),
+                       email: str = Form(...),
                        name: str = Form(...),
                        firstname: str = Form(...),
                        privileges: str = Form(...),
@@ -148,17 +188,20 @@ async def ajouter_user(request: Request,
                        confirm_password: Optional[str] = Form(None),
                        is_locked: bool = Form(...)
                        ):
+
+    if not validate_email(email):
+        return render_error_template(request, "ajouter_user.html", "Votre email n'est pas de la bonne forme.", username, email, name, firstname, privileges)
+
     if len(password) < 4:
-        return render_error_template(request, "ajouter_user.html",
-                                     "Le mot de passe doit contenir au moins 4 caractères.")
+        return render_error_template(request, "ajouter_user.html", "Le mot de passe doit contenir au moins 4 caractères.", username, email, name, firstname, privileges)
     if password != confirm_password:
-        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.")
+        return render_error_template(request, "ajouter_user.html", "Les mots de passe ne correspondent pas.", username, email, name, firstname, privileges)
     # Verifie si le username existe déjà dans la DB
     if db.query(User).filter(
             (func.lower(User.email) == func.lower(email)) |
             (func.lower(User.username) == func.lower(username))
     ).first():
-        return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.")
+        return render_error_template(request, "ajouter_user.html", "Email ou nom d'utilisateur déjà utilisé.", username, email, name, firstname, privileges)
 
     # Create new User instance
     new_user = User(
@@ -281,6 +324,7 @@ async def handle_connexion(request: Request, form_data: OAuth2PasswordRequestFor
     else:
         return templates.TemplateResponse("connexion.html", {
             "request": request,
+            "usernameError": form_data.username,
             "error": "Nom d'utilisateur ou mot de passe invalide."
         })
 
@@ -301,24 +345,26 @@ async def inscription(request: Request):
 
 @router.post("/inscription")
 async def create_user(request: Request, db: Session = Depends(get_db),
-                      new_username: str = Form(...), new_email: EmailStr = Form(...),
+                      new_username: str = Form(...), new_email: str = Form(...),
                       new_password: str = Form(...), confirm_password: str = Form(...),
                       new_firstname: str = Form(...), new_name: str = Form(...)):
 
+    if not validate_email(new_email):
+        return render_error_template(request, "signup.html", "Votre email n'est pas de la bonne forme.", new_username, new_email, new_name, new_firstname, )
     if len(new_password) < 4:
-        return render_error_template(request, "signup.html", "Le mot de passe doit contenir au moins 4 caractères.")
+        return render_error_template(request, "signup.html", "Le mot de passe doit contenir au moins 4 caractères.", new_username, new_email, new_name, new_firstname)
     if new_password != confirm_password:
-        return render_error_template(request, "signup.html", "Les mots de passe ne correspondent pas.")
+        return render_error_template(request, "signup.html", "Les mots de passe ne correspondent pas.", new_username, new_email, new_name, new_firstname)
     # Verifie si le username existe déjà dans la DB
     if db.query(User).filter(
             (func.lower(User.email) == func.lower(new_email)) |
             (func.lower(User.username) == func.lower(new_username))
     ).first():
-        return render_error_template(request, "signup.html", "Email ou nom d'utilisateur déjà utilisé.")
+        return render_error_template(request, "signup.html", "Email ou nom d'utilisateur déjà utilisé.", new_username, new_email, new_name, new_firstname)
 
     hashed_password = generate_password_hash(new_password)
     new_user = User(username=new_username, email=new_email, password_hash=hashed_password, privileges="user",
-                    is_locked=0, prenom=new_firstname, nom=new_name)
+                    is_locked=0, firstname=new_firstname, name=new_name)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -428,10 +474,11 @@ async def update_profile(request: Request, db: Session = Depends(get_db),
             'is_locked': str(user.is_locked)
         }
         new_token = create_access_token(data=new_token_data)
-        response = RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="access_token", value=f"Bearer {new_token}", httponly=True, secure=True, samesite='Lax')
+        response = templates.TemplateResponse("/profil.html", {"request": request, "message": "Profil modifié avec succès!", "user": user}, status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="access_token", value=f"Bearer {new_token}", httponly=True, secure=True, samesite='Lax', maxage=14400)
         response.set_cookie(key="username", value=user.username, httponly=True, secure=True,
                             samesite='Lax')  # Mise à jour du cookie username
+
         return response
 
     return RedirectResponse(url="/profil", status_code=status.HTTP_303_SEE_OTHER)
@@ -451,9 +498,23 @@ async def check_email(email: str, db: Session = Depends(get_db)):
     return {"is_unique": True}
 
 
-def render_error_template(request: Request, template_name: str, error_message: str, status_code: int = 400):
+def render_error_template(request: Request,
+                          template_name: str,
+                          error_message: str,
+                          usernameError: Optional[str] = Form(None),
+                          email: Optional[str] = Form(None),
+                          nom: Optional[str] = Form(None),
+                          prenom: Optional[str] = Form(None),
+                          privileges: Optional[str] = Form(None),
+                          status_code: int = 400):
+
     return templates.TemplateResponse(template_name, {
         "request": request,
+        "usernameError": usernameError,
+        "email": email,
+        "nom": nom,
+        "prenom": prenom,
+        "privilegesError": privileges,
         "error": error_message  # Utilisez "error" comme clé pour que cela corresponde au template
     }, status_code=status_code)
 

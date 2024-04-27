@@ -31,7 +31,7 @@ async def liste(request: Request, db: Session = Depends(get_db), page: int = 1):
         user_isadmin = 1
 
 
-    per_page = 10
+    per_page = 17
     offset = (page - 1) * per_page
 
     # Query to get total number of books
@@ -94,6 +94,12 @@ async def modifier_livre(request: Request,
 # Page permettant de modifier un livre (à modifier par un pop-up)
 @router.get("/modifier", response_class=HTMLResponse, name="modifier")
 async def modifier(request: Request, id: int, db: Session = Depends(get_db)):
+
+    is_authenticated = request.state.is_authenticated
+    if not is_authenticated:
+        raise HTTPException(status_code=401, detail="Unauthorized.")
+
+
     # Query for the specific book by ID
     livre = db.query(Livre).filter(Livre.id == id).first()
 
