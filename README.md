@@ -15,3 +15,5 @@ pip3 install -r .\requirements.txt
 
 <strong>Run the app :</strong><br>
 uvicorn app.main:app --reload
+
+find all <strong>infos on localhost/infos</strong>
